@@ -1,4 +1,0 @@
-base:
-  '*':
-    - concourse-ci
-    

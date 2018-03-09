@@ -1,10 +1,10 @@
 {%- from "concourse-ci/map.jinja" import concourse with context -%}
 [Unit]
-Description=concourse-ci worker
+Description=concourse worker
 
 [Service]
 Type=simple
-ExecStart={{ concourse.install_dir }}/concourse worker \
+ExecStart={{ concourse.bin_dir }}/concourse worker \
   --work-dir {{ concourse.worker.work_dir }} \
   {%- for tag in concourse.worker.tags %}
   --tag {{ tag }} \
@@ -14,4 +14,5 @@ ExecStart={{ concourse.install_dir }}/concourse worker \
   {%- endfor %}
   --tsa-host {{ concourse.worker.tsa_host }} \
   --tsa-public-key {{ concourse.pki_dir }}/tsa_host_key.pub \
-  --tsa-worker-private-key {{ concourse.pki_dir }}/worker_key
+  --tsa-worker-private-key {{ concourse.pki_dir }}/worker_key \
+  --garden-dns-server 8.8.8.8

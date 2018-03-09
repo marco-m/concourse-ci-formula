@@ -1,3 +1,7 @@
-.vagrant/*
+.vagrant/
 *~
 *.log
+.pytest_cache/
+.vscode/
+__pycache__/
+ssh-config.tmp

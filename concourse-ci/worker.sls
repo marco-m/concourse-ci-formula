@@ -2,10 +2,7 @@
 
 include:
   - concourse-ci.install
-  - concourse-ci.certs
-
-# set up pki certs
-
+  - concourse-ci.keys
 
 {{ concourse.worker.work_dir }}:
   file.directory:
@@ -14,18 +11,18 @@ include:
     - mode: 755
     - makedirs: True
 
-concourse-ci-worker_{{ concourse.worker.service.name }}_systemd_unit:
+concourse-worker_systemd_unit:
   file.managed:
-    - name: /etc/systemd/system/{{ concourse.worker.service.name }}.service
+    - name: /etc/systemd/system/concourse-worker.service
     - source: salt://concourse-ci/templates/worker.unit.jinja
     - template: jinja
   module.run:
     - name: service.systemctl_reload
     - onchanges:
-      - file: concourse-ci-worker_{{ concourse.worker.service.name }}_systemd_unit
+      - file: concourse-worker_systemd_unit
 
-concourse-ci-worker_{{ concourse.worker.service.name }}_running:
+concourse-worker_running:
   service.running:
-    - name: {{ concourse.worker.service.name }}
+    - name: concourse-worker
     - watch:
-      - module: concourse-ci-worker_{{ concourse.worker.service.name }}_systemd_unit
+      - module: concourse-worker_systemd_unit

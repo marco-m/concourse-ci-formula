@@ -1,9 +1,0 @@
-name: concourse-ci
-os: Ubuntu, Debian
-os_family: Debian
-version: 0.1.0
-release: 1
-summary: SaltStack formula for concourse.ci continuous integration system.
-description: SaltStack formula for concourse.ci continuous integration server/worker.
-top_level_dir: concourse-ci
-recommended:

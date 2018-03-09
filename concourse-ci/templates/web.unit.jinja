@@ -1,0 +1,19 @@
+{%- from "concourse-ci/map.jinja" import concourse with context -%}
+[Unit]
+Description=concourse web
+
+[Service]
+User={{ concourse.user }}
+Group={{ concourse.group }}
+Type=simple
+ExecStart={{ concourse.bin_dir }}/concourse web \
+  --basic-auth-username {{ concourse.web.auth.basic.username }} \
+  --basic-auth-password {{ concourse.web.auth.basic.password }} \
+  --session-signing-key {{ concourse.pki_dir }}/session_signing_key \
+  --tsa-host-key {{ concourse.pki_dir }}/tsa_host_key \
+  --tsa-authorized-keys {{ concourse.pki_dir }}/authorized_worker_keys \
+  {%- for option, value in concourse.web.options.iteritems() %}
+  --{{ option }} {{ value }} \
+  {%- endfor %}
+  --postgres-data-source {{ concourse.web.postgres_url }} \
+  --external-url {{ concourse.web.external_url }}

@@ -1,12 +1,13 @@
 {% from "concourse-ci/map.jinja" import concourse with context %}
 
-{%- if concourse.server.pki is defined %}
+{%- if concourse.web.pki is defined %}
+
 {{ concourse.pki_dir }}/tsa_host_key:
   file.managed:
-    {%- if concourse.server.pki.host_key_url is defined %}
-    - source: {{ concourse.server.pki.host_key_url }}
+    {%- if concourse.web.pki.host_key_url is defined %}
+    - source: {{ concourse.web.pki.host_key_url }}
     {%- else %}
-    - contents_pillar: 'concourse.server.pki.host_key'
+    - contents_pillar: 'concourse.web.pki.host_key'
     {%- endif %}
     - user: {{ concourse.user }}
     - group: {{ concourse.group }}
@@ -14,10 +15,10 @@
 
 {{ concourse.pki_dir }}/session_signing_key:
   file.managed:
-    {%- if concourse.server.pki.session_key_url is defined %}
-    - source: {{ concourse.server.pki.session_key_url }}
+    {%- if concourse.web.pki.session_key_url is defined %}
+    - source: {{ concourse.web.pki.session_key_url }}
     {%- else %}
-    - contents_pillar: 'concourse.server.pki.session_key'
+    - contents_pillar: 'concourse.web.pki.session_key'
     {%- endif %}
     - user: {{ concourse.user }}
     - group: {{ concourse.group }}
@@ -32,14 +33,14 @@
 populate {{ concourse.pki_dir }}/authorized_worker_keys:
   file.append:
     - name: {{ concourse.pki_dir }}/authorized_worker_keys
-    {%- if concourse.server.pki.authorized_worker_cert_urls is defined %}
+    {%- if concourse.web.pki.authorized_worker_cert_urls is defined %}
     - sources:
-      {%- for worker_cert_url in concourse.server.pki.authorized_worker_cert_urls %}
+      {%- for worker_cert_url in concourse.web.pki.authorized_worker_cert_urls %}
       - {{ worker_cert_url }}
       {%- endfor %}
     {%- else %}
     - text: |
-      {%- for worker_cert in concourse.server.pki.authorized_worker_certs %}
+      {%- for worker_cert in concourse.web.pki.authorized_worker_certs %}
       {{ worker_cert }}
       {%- endfor %}
     {%- endif %}
@@ -51,7 +52,7 @@ populate {{ concourse.pki_dir }}/authorized_worker_keys:
     {%- if concourse.worker.pki.worker_key_url is defined %}
     - source: {{ concourse.worker.pki.worker_key_url }}
     {%- else %}
-    - contents_pillar: 'concourse.server.pki.worker_key'
+    - contents_pillar: 'concourse.web.pki.worker_key'
     {%- endif %}
     - user: {{ concourse.user }}
     - group: {{ concourse.group }}
@@ -62,7 +63,7 @@ populate {{ concourse.pki_dir }}/authorized_worker_keys:
     {%- if concourse.worker.pki.tsa_host_cert_url is defined %}
     - source: {{ concourse.worker.pki.tsa_host_cert_url }}
     {%- else %}
-    - contents_pillar: 'concourse.server.pki.tsa_host_cert'
+    - contents_pillar: 'concourse.web.pki.tsa_host_cert'
     {%- endif %}
     - user: {{ concourse.user }}
     - group: {{ concourse.group }}
