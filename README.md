@@ -12,31 +12,10 @@ Based on https://github.com/mbools/concourse-ci-formula and https://github.com/J
 
 ## Usage
 
-You can use this repo either as a SaltStack formula or simply to bring up a fully functioning Concourse installation with Vagrant and VirtualBox.
+You can use this repo for two purposes:
 
-See the full Salt Formulas installation and usage instructions at http://docs.saltstack.com/en/latest/topics/development/conventions/formulas.html
-
-### Configuration
-
-As any SaltStack formula, all the configurable settings are in file `pillar.example`. You need to copy this file to your pillar directory and rename it to `concourse-ci.sls` in order for it to be loaded.
-
-## Available states
-
-### `concourse-ci.keys`
-
-Install auto-generated Concourse keys for web and worker.
-
-### `concourse-ci.web`
-
-Install and run `concourse web` as a service (currently only `systemd`).
-
-### `concourse-ci.worker`
-
-Install and run `concourse worker` as a service (currently only `systemd`).
-
-### `concourse-ci.postgres`
-
-Installs Postgres ready to be used by concourse web.
+1. to bring up a fully functioning Concourse installation with Vagrant and VirtualBox (simply issue `vagrant up` and jump to section "Test driving Concourse").
+2. As a SaltStack formula (see the full Salt Formulas installation and usage instructions at http://docs.saltstack.com/en/latest/topics/development/conventions/formulas.html)
 
 ## Test driving Concourse
 
@@ -57,6 +36,30 @@ Run:
     cd tests
     vagrant ssh-config > ssh-config.tmp
     py.test --hosts=concourse-formula --ssh-config=ssh-config.tmp
+
+## SaltStack formula
+
+### Configuration
+
+As any SaltStack formula, all the configurable settings are in file `pillar.example`. You need to copy this file to your pillar directory and rename it to `concourse-ci.sls` in order for it to be loaded.
+
+### Available states
+
+#### `concourse-ci.keys`
+
+Install auto-generated Concourse keys for web and worker.
+
+#### `concourse-ci.web`
+
+Install and run `concourse web` as a service (currently only `systemd`).
+
+#### `concourse-ci.worker`
+
+Install and run `concourse worker` as a service (currently only `systemd`).
+
+#### `concourse-ci.postgres`
+
+Installs Postgres ready to be used by concourse web.
 
 ## How to develop
 
