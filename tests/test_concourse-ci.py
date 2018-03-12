@@ -38,8 +38,12 @@ def test_can_get_valid_concourse_url(host):
 def fly_login(host):
     assert proc.run(shlex.split("{} logout".format(FLY)), timeout=5).returncode == 0
     addr = concourse_url(host)
-    # FIXME I would like to get the credentials from map.jija/pillars but I don't know how
-    assert proc.run(shlex.split("{} login -c {} -u concourse -p concourse".format(FLY, addr)),
+    user_k = "concourse:lookup:web_auth_basic_username"
+    password_k = "concourse:lookup:web_auth_basic_password"
+    creds = host.salt("pillar.item", [user_k, password_k])
+    user = creds[user_k]
+    password = creds[password_k]
+    assert proc.run(shlex.split("{} login -c {} -u {} -p {}".format(FLY, addr, user, password)),
                     timeout=5).returncode == 0
     yield
     assert proc.run(shlex.split("{} logout".format(FLY)), timeout=5).returncode == 0

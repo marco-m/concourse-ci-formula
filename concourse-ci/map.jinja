@@ -7,39 +7,28 @@
     'base_url': 'https://github.com/concourse/concourse/releases/download',
     'exe_name': 'concourse_linux_amd64',
     'install_dir': '/home/concourse',
-    'postgres': {
-      'user': 'concourse',
-      'password': 'changeme-65f2de184f5e1d5ec57'
-    }
+
+    'postgres_user': 'concourse',
+    'postgres_password': 'changeme-65f2de184f5e1d5ec57',
+
+    'web_auth_basic_username': 'changeme',
+    'web_auth_basic_password': 'changeme',
+    'web_external_url': 'http://' + salt['network.interface_ip']('eth1') + ':8080',
+    'web_options': {},
+
+    'worker_options': {},
+    'worker_tags': [],
+    'worker_tsa_host': '127.0.0.1',
   }
 },
 merge=salt['pillar.get']('concourse:lookup'), base='default') %}
 
-{% set override = salt['grains.filter_by']({
-  'default': {
-    'install_dir': concourse.install_dir,
-    'bin_dir': concourse.install_dir + '/bin',
-    'pki_dir': concourse.install_dir + '/keys',
-    'exe_url': '/'.join([concourse.base_url, concourse.version,concourse.exe_name]),
-    'web': {
-      'options': {},
-      'external_url': 'http://' + salt['network.interface_ip']('eth1') + ':8080',
-      'postgres_url': 'postgres://' + concourse.postgres.user + ':' +  concourse.postgres.password + '@127.0.0.1/atc',
-      'auth': {
-        'basic': {
-          'username': 'concourse',
-          'password': 'concourse'
-        }
-      }
-    },
-    'worker': {
-      'options': {},
-      'tags': [],
-      'tsa_host': '127.0.0.1',
-      'work_dir': concourse.install_dir + '/worker',
-    }
-  }
-},
-merge=salt['pillar.get']('concourse:lookup'), base='default') %}
-
-{% do concourse.update(override) %}
+{% do
+  concourse.update({'pki_dir': concourse.install_dir + '/keys'}),
+  concourse.update({'bin_dir': concourse.install_dir + '/bin'}),
+  concourse.update({'exe_url': '/'.join([concourse.base_url, concourse.version, concourse.exe_name])}),
+  concourse.update({'worker_work_dir': concourse.install_dir + '/worker'}),
+  concourse.update({'web_postgres_url':
+                    'postgres://{}:{}@127.0.0.1/atc'.format(concourse.postgres_user,
+                                                            concourse.postgres_password )})
+%}

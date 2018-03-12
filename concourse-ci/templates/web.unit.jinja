@@ -7,13 +7,13 @@ User={{ concourse.user }}
 Group={{ concourse.group }}
 Type=simple
 ExecStart={{ concourse.bin_dir }}/concourse web \
-  --basic-auth-username {{ concourse.web.auth.basic.username }} \
-  --basic-auth-password {{ concourse.web.auth.basic.password }} \
+  --basic-auth-username {{ concourse.web_auth_basic_username }} \
+  --basic-auth-password {{ concourse.web_auth_basic_password }} \
   --session-signing-key {{ concourse.pki_dir }}/session_signing_key \
   --tsa-host-key {{ concourse.pki_dir }}/tsa_host_key \
   --tsa-authorized-keys {{ concourse.pki_dir }}/authorized_worker_keys \
-  {%- for option, value in concourse.web.options.iteritems() %}
+  {%- for option, value in concourse.web_options.iteritems() %}
   --{{ option }} {{ value }} \
   {%- endfor %}
-  --postgres-data-source {{ concourse.web.postgres_url }} \
-  --external-url {{ concourse.web.external_url }}
+  --postgres-data-source {{ concourse.web_postgres_url }} \
+  --external-url {{ concourse.web_external_url }}

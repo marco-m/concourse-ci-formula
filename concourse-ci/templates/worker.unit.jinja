@@ -5,14 +5,14 @@ Description=concourse worker
 [Service]
 Type=simple
 ExecStart={{ concourse.bin_dir }}/concourse worker \
-  --work-dir {{ concourse.worker.work_dir }} \
-  {%- for tag in concourse.worker.tags %}
+  --work-dir {{ concourse.worker_work_dir }} \
+  {%- for tag in concourse.worker_tags %}
   --tag {{ tag }} \
   {%- endfor %}
-  {%- for option, value in concourse.worker.options.iteritems() %}
+  {%- for option, value in concourse.worker_options.iteritems() %}
   --{{ option }}={{ value }}
   {%- endfor %}
-  --tsa-host {{ concourse.worker.tsa_host }} \
+  --tsa-host {{ concourse.worker_tsa_host }} \
   --tsa-public-key {{ concourse.pki_dir }}/tsa_host_key.pub \
   --tsa-worker-private-key {{ concourse.pki_dir }}/worker_key \
   --garden-dns-server 8.8.8.8

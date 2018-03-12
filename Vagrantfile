@@ -58,7 +58,7 @@ Vagrant.configure("2") do |config|
     salt.verbose = true
   end
 
-  config.vm.provision :shell, path: "scripts/print_ip.sh", run: 'always'
+  config.vm.provision :shell, path: "scripts/welcome.sh", run: 'always'
 
 # FIXME what is this? runs the tests ?  
 #  config.vm.provision "shell", path: "scripts/testinfra.sh"

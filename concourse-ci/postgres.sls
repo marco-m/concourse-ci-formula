@@ -14,10 +14,10 @@ postgres:
 concourse_create_postgres_user:
   postgres_user.present:
     - user: 'postgres'
-    - name: {{ concourse.postgres.user }}
-    - password: {{ concourse.postgres.password }}
+    - name: {{ concourse.postgres_user }}
+    - password: {{ concourse.postgres_password }}
 
 concourse_create_postgres_database:
   postgres_database.present:
     - name: 'atc'
-    - owner: {{ concourse.postgres.user }}
+    - owner: {{ concourse.postgres_user }}

@@ -4,7 +4,7 @@ include:
   - concourse-ci.install
   - concourse-ci.keys
 
-{{ concourse.worker.work_dir }}:
+{{ concourse.worker_work_dir }}:
   file.directory:
     - user: {{ concourse.user }}
     - group: {{ concourse.group }}
@@ -16,6 +16,7 @@ concourse-worker_systemd_unit:
     - name: /etc/systemd/system/concourse-worker.service
     - source: salt://concourse-ci/templates/worker.unit.jinja
     - template: jinja
+    - mode: 600
   module.run:
     - name: service.systemctl_reload
     - onchanges:

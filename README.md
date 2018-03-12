@@ -1,8 +1,6 @@
 # concourse-ci
 
-SaltStack formula for the [concourse-ci] continuous integration server.
-
-Based on https://github.com/mbools/concourse-ci-formula and https://github.com/JustinCarmony/vagrant-salt-example and heavily modified.
+Single VM Concourse installation and SaltStack formula to install Concourse.
 
 ## Status
 
@@ -14,12 +12,26 @@ Based on https://github.com/mbools/concourse-ci-formula and https://github.com/J
 
 You can use this repo for two purposes:
 
-1. to bring up a fully functioning Concourse installation with Vagrant and VirtualBox (simply issue `vagrant up` and jump to section "Test driving Concourse").
-2. As a SaltStack formula (see the full Salt Formulas installation and usage instructions at http://docs.saltstack.com/en/latest/topics/development/conventions/formulas.html)
+1. To bring up a fully functioning Concourse installation with Vagrant and VirtualBox (follow section "Test driving Concourse").
+2. As a SaltStack formula (see the full Salt Formulas installation and usage instructions at http://docs.saltstack.com/en/latest/topics/development/conventions/formulas.html).
 
 ## Test driving Concourse
 
-At the end of `vagrant up`, vagrant will print the URL to use to connect to the Concourse web and to use `fly`.
+* Install a recent [VirtualBox] and [Vagrant].
+* Run `vagrant up`.
+
+At the end of `vagrant up`, vagrant will print the URL and credentials to use to connect to the Concourse web and to use `fly`. For example:
+
+    ...
+    concourse-formula: The Concourse server is available at http://192.168.50.4:8080
+    concourse-formula: fly -t ci login -c http://192.168.50.4:8080
+    concourse-formula: Credentials: XXX YYY
+
+## Security considerations and production use
+
+The installation uses hard-coded credentials. This is fine as long as you don't change the network configuration (the VM is accessible only from the computer hosting it). If you want to deploy this VM, you MUST change the credentials (see `pillar/concourse.sls`).
+
+Note also that this VM, with its default values, is for test-driving Concourse, NOT for production use. If you want to do production use, then you need to customize it and in any case understand how Concourse works. Unless you know SaltStack well, it is better if you use the official Concourse BOSH distribution.
 
 ## Running the tests
 
@@ -79,3 +91,10 @@ You can do the same while logged in the VM (this is faster):
 - how do i change the hostname of the VM? It is set to `vagrant`
 
 [concourse-ci]: http://concourse-ci.org/
+
+## Credits
+
+Based on https://github.com/mbools/concourse-ci-formula and https://github.com/JustinCarmony/vagrant-salt-example and heavily modified.
+
+[VirtualBox]: https://www.virtualbox.org/
+[Vagrant]: https://www.vagrantup.com/

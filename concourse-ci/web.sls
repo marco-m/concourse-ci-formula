@@ -9,6 +9,7 @@ concourse-web_systemd_unit:
     - name: /etc/systemd/system/concourse-web.service
     - source: salt://concourse-ci/templates/web.unit.jinja
     - template: jinja
+    - mode: 600
   module.run:
     - name: service.systemctl_reload
     - onchanges:
