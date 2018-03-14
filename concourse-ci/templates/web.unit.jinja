@@ -1,6 +1,8 @@
 {%- from "concourse-ci/map.jinja" import concourse with context -%}
 [Unit]
 Description=concourse web
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 User={{ concourse.user }}

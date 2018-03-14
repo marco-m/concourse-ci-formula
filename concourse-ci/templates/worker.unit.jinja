@@ -1,6 +1,8 @@
 {%- from "concourse-ci/map.jinja" import concourse with context -%}
 [Unit]
 Description=concourse worker
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 Type=simple
@@ -15,4 +17,4 @@ ExecStart={{ concourse.bin_dir }}/concourse worker \
   --tsa-host {{ concourse.worker_tsa_host }} \
   --tsa-public-key {{ concourse.pki_dir }}/tsa_host_key.pub \
   --tsa-worker-private-key {{ concourse.pki_dir }}/worker_key \
-  --garden-dns-server 8.8.8.8
+  --garden-dns-server {{ concourse.worker_garden_dns_server }}

@@ -19,6 +19,7 @@
     'worker_options': {},
     'worker_tags': [],
     'worker_tsa_host': '127.0.0.1',
+    'worker_garden_dns_server': '8.8.8.8'
   }
 },
 merge=salt['pillar.get']('concourse:lookup'), base='default') %}
@@ -26,7 +27,8 @@ merge=salt['pillar.get']('concourse:lookup'), base='default') %}
 {% do
   concourse.update({'pki_dir': concourse.install_dir + '/keys'}),
   concourse.update({'bin_dir': concourse.install_dir + '/bin'}),
-  concourse.update({'exe_url': '/'.join([concourse.base_url, concourse.version, concourse.exe_name])}),
+  concourse.update({'exe_url': '/'.join([concourse.base_url, concourse.version,
+                                         concourse.exe_name])}),
   concourse.update({'worker_work_dir': concourse.install_dir + '/worker'}),
   concourse.update({'web_postgres_url':
                     'postgres://{}:{}@127.0.0.1/atc'.format(concourse.postgres_user,

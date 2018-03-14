@@ -22,7 +22,7 @@ user_{{ concourse.user }}:
   file.directory:
     - user: {{ concourse.user }}
     - group: {{ concourse.group }}
-    - mode: 755
+    - mode: 700
     - makedirs: True
 
 {{ concourse.bin_dir }}:

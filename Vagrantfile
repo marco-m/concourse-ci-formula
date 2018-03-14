@@ -9,25 +9,34 @@ end
 
 # Set correct locale for `vagrant ssh`, no matter how the host is configured.
 ENV["LC_ALL"] = "en_US.UTF-8"
+
 # Disable escaping from current directory via symbolic links, new VirtualBox
 # "feature" enabled by default.
 ENV["VAGRANT_DISABLE_VBOXSYMLINKCREATE"] = "1"
 
 vm_name = "concourse-formula"
 Vagrant.configure("2") do |config|
+
   # Why not 16.04 LTS ? Because we want btrfs for performance and we need a
   # recent kernel to reduce the many bugs seen with Concourse and btrfs.
   config.vm.box = "bento/ubuntu-17.10"
-  # NOTE same IP address must be passed to Concourse ATC, DO NOT USE loopback!
-  # We specify "private_network" instead of just using the NAT done by VirtualBox
-  # because if we use NAT then the value of the port forwarded for 8080 depends
-  # on the current status of the host, while we want to be sure tha 8080 is
-  # available.
-  
-  # private_network configures a VirtualBox host-only adapter
-  # doesn't work, bug in vbox i think :-(
+
+  # INT-1419
+  # NOTE concourse web has a mandatory option "--external-url" that:
+  # 1. Cannot be loopback (reason of "external" in the name).
+  # 2. Must be reachable from the host, so on VirtualBox it cannot be the address
+  #    of the first guest interface (eth0) plus VirtualBox port forwarding of 8080
+  # This means that unfortunately we need a separate interface (which by itself is not
+  # a problem; it becomes a problem because we want to use the same SaltStack configuration
+  # both for VirtualBox and for AMI, and for the AMI we want only one interface).
+  # This is a known problem in Concourse and there is a ticket for it
+  # https://github.com/concourse/concourse/issues/2069
+  # which should be addressed soon (March 2018).
+
+  # Ideally we would like to use VirtualBox DHCP to assign an address:
   #config.vm.network "private_network", type: "dhcp"
-  
+  # but it doesn't work for some reasons I don't understand, so we are stuck with
+  # an hard-coded IP address
   config.vm.network "private_network", ip: "192.168.50.4"
   config.vm.define vm_name # Customize the name that shows with vagrant CLI
   #config.vm.hostname vm_name
@@ -38,29 +47,13 @@ Vagrant.configure("2") do |config|
     vb.cpus = 2
   end
 
-  # Marco
-
-  # config.vm.provision "shell", inline: <<-SHELL
-  #   apt-get update
-  #   apt-get install -y postgresql
-  #   sudo -u postgres createdb atc
-  #   sudo -u postgres psql <<SQL
-  #     CREATE USER vagrant PASSWORD 'vagrant';
-  #   SQL
-  # SHELL
-
   config.vm.provision :salt do |salt|
     salt.masterless = true
     salt.minion_config = 'saltstack/etc/minion'
-    #salt.bootstrap_options = ''
     salt.run_highstate = true
     salt.colorize = true
     salt.verbose = true
   end
 
   config.vm.provision :shell, path: "scripts/welcome.sh", run: 'always'
-
-# FIXME what is this? runs the tests ?  
-#  config.vm.provision "shell", path: "scripts/testinfra.sh"
-
 end
