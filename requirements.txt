@@ -1,4 +1,5 @@
 pytest
-paramiko
 pytest-xdist
 testinfra
+tox
+tox-venv
