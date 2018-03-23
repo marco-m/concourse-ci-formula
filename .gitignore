@@ -1,6 +1,7 @@
 .vagrant/
 *~
 *.log
+.tox/
 .pytest_cache/
 .vscode/
 __pycache__/
