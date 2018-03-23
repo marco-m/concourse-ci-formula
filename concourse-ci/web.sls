@@ -18,5 +18,6 @@ concourse-web_systemd_unit:
 concourse-web_running:
   service.running:
     - name: concourse-web
+    - enable: True
     - watch:
       - module: concourse-web_systemd_unit

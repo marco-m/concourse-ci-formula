@@ -25,5 +25,6 @@ concourse-worker_systemd_unit:
 concourse-worker_running:
   service.running:
     - name: concourse-worker
+    - enable: True
     - watch:
       - module: concourse-worker_systemd_unit

@@ -8,6 +8,7 @@ Wants=network-online.target
 User={{ concourse.user }}
 Group={{ concourse.group }}
 Type=simple
+Restart=on-failure
 ExecStart={{ concourse.bin_dir }}/concourse web \
   --basic-auth-username {{ concourse.web_auth_basic_username }} \
   --basic-auth-password {{ concourse.web_auth_basic_password }} \
@@ -19,3 +20,6 @@ ExecStart={{ concourse.bin_dir }}/concourse web \
   {%- endfor %}
   --postgres-data-source {{ concourse.web_postgres_url }} \
   --external-url {{ concourse.web_external_url }}
+
+[Install]
+WantedBy=multi-user.target

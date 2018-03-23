@@ -6,6 +6,7 @@ Wants=network-online.target
 
 [Service]
 Type=simple
+Restart=on-failure
 ExecStart={{ concourse.bin_dir }}/concourse worker \
   --work-dir {{ concourse.worker_work_dir }} \
   {%- for tag in concourse.worker_tags %}
@@ -18,3 +19,6 @@ ExecStart={{ concourse.bin_dir }}/concourse worker \
   --tsa-public-key {{ concourse.pki_dir }}/tsa_host_key.pub \
   --tsa-worker-private-key {{ concourse.pki_dir }}/worker_key \
   --garden-dns-server {{ concourse.worker_garden_dns_server }}
+
+[Install]
+WantedBy=multi-user.target
