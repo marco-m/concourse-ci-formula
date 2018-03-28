@@ -42,7 +42,7 @@ Vagrant.configure("2") do |config|
   config.vm.define vm_name # Customize the name that shows with vagrant CLI
   #config.vm.hostname vm_name
   config.vm.provider "virtualbox" do |vb|
-    vb.name = vm_name # Customize the name that shows in the GUI
+    vb.name = vm_name # Customize the name that shows in the VirtualBox GUI
     vb.linked_clone = true # Optimize VM creation speed
     vb.memory = "4096"
     vb.cpus = 2

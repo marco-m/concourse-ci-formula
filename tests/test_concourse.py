@@ -1,5 +1,8 @@
+import pathlib
 import subprocess
 import pytest
+
+THIS_DIR = pathlib.Path(__file__).parent
 
 
 # We use a custom fly target to be sure that running the tests doesn't have
@@ -53,4 +56,4 @@ def test_fly_can_login_and_logout(host, fly_login):
 
 def test_fly_can_execute_task_with_input(host, fly_login):
     # timeout is longer here because it could require download of a Docker image
-    assert fly(['execute', '-c', 'task.yml', '-i', 'an-input=.'], timeout=30).returncode == 0
+    assert fly(['execute', '-c', THIS_DIR/'task.yml', '-i', 'an-input=.'], timeout=30).returncode == 0
