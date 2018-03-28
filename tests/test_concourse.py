@@ -95,18 +95,18 @@ def test_can_get_valid_concourse_url(host):
     assert concourse_url(host)
 
 
-def test_fly_can_execute_task_with_input():
-    assert fly('execute', config='{}/task.yml'.format(HERE), input='an-input=.')
+def test_fly_can_execute_task_with_input(fly_login):
+    assert fly('execute', config='{}/task.yml'.format(HERE), input='an-input={}'.format(HERE))
 
 
 # TODO move in fixture
-def test_fly_can_set_and_unpause_simple_pipeline(host, fly_login):
+def test_fly_can_set_and_unpause_simple_pipeline(fly_login):
     pl = 'pipeline-1'
     assert fly('set-pipeline', non_interactive=True, pipeline=pl, config='{}.yml'.format(HERE/pl))
     assert fly('unpause-pipeline', pipeline=pl)
 
 
-def test_fly_can_trigger_job_in_simple_pipeline(host, fly_login):
+def test_fly_can_trigger_job_in_simple_pipeline(fly_login):
     pl = 'pipeline-1'
     assert fly('trigger-job', job='{}/job-hello-world'.format(pl), watch=True)
 
@@ -131,7 +131,7 @@ def test_can_put_and_get_file_in_minio_s3(host):
 
 
 # TODO move in fixture
-def test_fly_prepare_pipeline_2(host, fly_login):
+def test_fly_prepare_pipeline_2(fly_login):
     pl = 'pipeline-2'
     assert fly('set-pipeline', non_interactive=True,
                pipeline=pl, config='{}.yml'.format(HERE/pl),
@@ -141,16 +141,16 @@ def test_fly_prepare_pipeline_2(host, fly_login):
     assert fly('unpause-pipeline', pipeline=pl)
 
 
-# fixme can make it faster by forcing the check of the s3 resource:
-# fly -t ci check-resource -r pipeline-2/ping.s3
-def test_file_uploaded_to_minio_s3_triggers_pipeline(host):
+def test_file_uploaded_to_minio_s3_triggers_pipeline(host, fly_login):
     ts = time.strftime('%Y%m%d%H%M%S')
     ping = '{}-ping'.format(ts)
     pong = '{}-pong'.format(ts)
     bucket = 'channel'
     assert host_minio_put(host, bucket, ping, ts)
-    max_wait = 100
-    poll_interval = 5
+    # Force immediate checking of the resource to speed up
+    assert fly('check-resource', resource='pipeline-2/ping.s3')
+    max_wait = 30
+    poll_interval = 2
     for i in range(max_wait // poll_interval):
         if host_minio_get(host, bucket, pong):
             break
