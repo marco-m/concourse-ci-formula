@@ -14,7 +14,8 @@ ENV["LC_ALL"] = "en_US.UTF-8"
 # "feature" enabled by default.
 ENV["VAGRANT_DISABLE_VBOXSYMLINKCREATE"] = "1"
 
-vm_name = "concourse-formula"
+prefix = Pathname.getwd.parent.basename.to_s
+vm_name = "#{prefix}_concourse-formula"
 Vagrant.configure("2") do |config|
 
   # Why not 16.04 LTS ? Because we want btrfs for performance and we need a
