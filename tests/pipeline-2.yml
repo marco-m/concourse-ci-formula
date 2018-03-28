@@ -1,0 +1,50 @@
+---
+
+resources:
+
+  - name: ping.s3
+    type: s3
+    source:
+      regexp: (.*)-ping
+      bucket: channel
+      endpoint: ((minio-endpoint))
+      access_key_id: ((s3-access-key-id))
+      secret_access_key: ((s3-secret-access-key))
+
+  - name: pong.s3
+    type: s3
+    source:
+      regexp: (.*)-pong
+      bucket: channel
+      endpoint: ((minio-endpoint))
+      access_key_id: ((s3-access-key-id))
+      secret_access_key: ((s3-secret-access-key))
+
+jobs:
+
+  - name: ping-pong
+    plan:
+      - get: ping.s3
+        trigger: true
+      - task: do-pong
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source: {repository: alpine}
+          inputs:
+            - name: ping.s3
+          outputs:
+            - name: reply
+          run:
+            path: sh
+            args:
+              - -c
+              - |
+                set -o errexit
+                ls -R -1
+                ts=$(cat ping.s3/*-ping)
+                echo "concourse has been here" > reply/${ts}-pong
+      - put: pong.s3
+        params:
+          file: reply/*-pong

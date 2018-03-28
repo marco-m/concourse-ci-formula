@@ -1,6 +1,7 @@
 .vagrant/
 *~
 *.log
+*.iml
 .tox/
 .pytest_cache/
 .vscode/
