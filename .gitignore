@@ -4,5 +4,6 @@
 .tox/
 .pytest_cache/
 .vscode/
+*.iml
 __pycache__/
 ssh_config.generated
