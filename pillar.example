@@ -13,7 +13,6 @@ concourse:
 
     web_auth_basic_username:
     web_auth_basic_password:
-    web_external_url:
     web_options: {}
 
     worker_options: {}

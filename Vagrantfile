@@ -1,5 +1,5 @@
 # Enforce minimum version both for Vagrant and VirtualBox.
-Vagrant.require_version ">= 2.0.2"
+Vagrant.require_version ">= 2.0.3"
 MIN_VIRTUALBOX_VERSION = Gem::Version.new('5.2.8')
 version = `VBoxManage --version`
 clean_version = /[0-9]+\.[0-9]+\.[0-9]+/.match(version)

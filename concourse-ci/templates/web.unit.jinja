@@ -19,7 +19,11 @@ ExecStart={{ concourse.bin_dir }}/concourse web \
   --{{ option }} {{ value }} \
   {%- endfor %}
   --postgres-data-source {{ concourse.web_postgres_url }} \
-  --external-url {{ concourse.web_external_url }}
+{%- if concourse.web_fqdn %}
+  --external-url https://{{ concourse.web_fqdn }}
+{% else %}
+  --external-url http://{{ concourse.web_external_ip }}:8080
+{%- endif %}
 
 [Install]
 WantedBy=multi-user.target
