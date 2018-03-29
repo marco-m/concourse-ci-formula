@@ -96,7 +96,7 @@ def test_can_get_valid_concourse_url(host):
 
 
 def test_fly_can_execute_task_with_input(fly_login):
-    assert fly('execute', config='{}/task.yml'.format(HERE), input='an-input={}'.format(HERE))
+    assert fly('execute', config='{}/task-with-input.yml'.format(HERE), input='an-input={}'.format(HERE))
 
 
 # TODO move in fixture
