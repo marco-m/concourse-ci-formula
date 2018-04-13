@@ -18,7 +18,6 @@ ExecStart={{ concourse.bin_dir }}/concourse worker \
   --tsa-host {{ concourse.worker_tsa_host }} \
   --tsa-public-key {{ concourse.pki_dir }}/tsa_host_key.pub \
   --tsa-worker-private-key {{ concourse.pki_dir }}/worker_key \
-  --tsa-retry \
   --garden-dns-server {{ concourse.worker_garden_dns_server }}
 
 [Install]
