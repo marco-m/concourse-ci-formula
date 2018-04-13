@@ -1,8 +1,13 @@
 {% from "concourse-ci/map.jinja" import concourse with context %}
 
-include:
-  - concourse-ci.install
-  - concourse-ci.keys
+generate_session_signing_key:
+  cmd.run:
+    - name: "ssh-keygen -t rsa -f session_signing_key -N ''"
+    - runas: {{ concourse.user }}
+    - cwd: {{ concourse.pki_dir }}
+    - creates:
+      - {{ concourse.pki_dir }}/session_signing_key
+      - {{ concourse.pki_dir }}/session_signing_key.pub
 
 concourse-web_systemd_unit:
   file.managed:

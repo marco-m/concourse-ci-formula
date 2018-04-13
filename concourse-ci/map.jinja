@@ -19,7 +19,12 @@
     'worker_options': {},
     'worker_tags': [],
     'worker_tsa_host': '127.0.0.1:2222',
-    'worker_garden_dns_server': '8.8.8.8'
+    'worker_garden_dns_server': '8.8.8.8',
+
+    'ssm_tsa_private_key': '',
+    'ssm_tsa_public_key': '',
+    'ssm_worker_private_key': '',
+    'ssm_worker_public_key': ''
   }
 },
 merge=salt['pillar.get']('concourse:lookup'), base='default') %}

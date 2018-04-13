@@ -76,19 +76,27 @@ Run:
 
 ### Configuration
 
-As any SaltStack formula, all the configurable settings are in files
+As any SaltStack formula, all the configurable settings are in the following files:
+
+States:
+
+* `saltstack/salt/top.sls`
+
+Pillars:
 
 * `pillar.example`
 * `saltstack/pillar/concourse.sls`
 * `saltstack/pillar/minio.sls`
 
-Do not blindly overwrite `concourse.sls` with the contents of `pillar.example`; instead add the key/value pairs you need to `concourse.sls` file.
-
 ### Available states
 
-* `concourse-ci.keys` Install auto-generated Concourse keys for web and worker.
-* `concourse-ci.web` Install and run `concourse web` as a service (currently only `systemd`).
-* `concourse-ci.worker` Install and run `concourse worker` as a service (currently only `systemd`).
+You can either build an all-in-one VM containing everything (this is the default) or create multiple VMs, each one containing the components you want (this requires knowledge of SaltStack).
+
+* `concourse-ci.install` Install the concourse binary.
+* `concourse-ci.worker_keys` Install auto-generated keys for concourse worker. Can be overridden to use AWS SSM.
+* `concourse-ci.web_keys` Install auto-generated keys for concourse web. Can be overridden to use AWS SSM.
+* `concourse-ci.web` Install and run `concourse web` as a systemd service.
+* `concourse-ci.worker` Install and run `concourse worker` as a systemd service.
 * `concourse-ci.postgres` Install the Postgres ready to be used by concourse web.
 * `concourse-ci.minio` Install the Minio S3-compatible object storage server ready to be used by concourse web.
 
