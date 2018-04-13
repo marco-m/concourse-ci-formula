@@ -1,5 +1,9 @@
 {% from "concourse-ci/map.jinja" import concourse with context %}
 
+ssh-client:
+  pkg.installed:
+    - name: 'openssh-client'
+
 group_{{ concourse.group }}:
   group.present:
     - name: {{ concourse.group }}

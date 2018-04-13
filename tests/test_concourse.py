@@ -79,6 +79,12 @@ def test_concourse_worker_is_running_and_enabled(host):
     assert concourse.is_enabled
 
 
+def test_minio_is_running_and_enabled(host):
+    minio = host.service("minio")
+    assert minio.is_running
+    assert minio.is_enabled
+
+
 def vm_usable_address(host):
     # FIXME INT-1419
     for addr in host.salt("network.ip_addrs"):

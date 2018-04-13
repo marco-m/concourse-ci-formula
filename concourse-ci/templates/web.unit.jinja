@@ -12,8 +12,8 @@ Restart=on-failure
 ExecStart={{ concourse.bin_dir }}/concourse web \
   --basic-auth-username {{ concourse.web_auth_basic_username }} \
   --basic-auth-password {{ concourse.web_auth_basic_password }} \
-  --session-signing-key {{ concourse.pki_dir }}/session_signing_key \
   --tsa-host-key {{ concourse.pki_dir }}/tsa_host_key \
+  --session-signing-key {{ concourse.pki_dir }}/session_signing_key \
   --tsa-authorized-keys {{ concourse.pki_dir }}/authorized_worker_keys \
   {%- for option, value in concourse.web_options.iteritems() %}
   --{{ option }} {{ value }} \
