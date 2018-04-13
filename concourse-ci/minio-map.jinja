@@ -7,7 +7,7 @@
     'conf_dir': '/opt/minio/conf',
     'server_url': 'https://dl.minio.io/server/minio/release/linux-amd64/minio',
     'client_url': 'https://dl.minio.io/client/mc/release/linux-amd64/mc',
-    'buckets': ['test'],
+    'buckets': ['channel', 'test'],
     'endpoint': 'http://' + salt['network.interface_ip']('eth1') + ':9000',
   }
 },

@@ -1,7 +1,7 @@
 {% set concourse = salt['grains.filter_by']({
   'default': {
-    'version': 'v3.9.2',
-    'exe_hash': 'sha224=8bbc4ec0f7172a0e7a8e466ee1ec525ec1b643a323a5d690e942820e',
+    'version': 'v3.10.0',
+    'exe_hash': 'sha224=ebceb955949bc6833456c9d350f9be845e90e8ad0245b080149f2184',
     'user': 'concourse',
     'group': 'concourse',
     'base_url': 'https://github.com/concourse/concourse/releases/download',
@@ -18,7 +18,7 @@
     'web_fqdn': None,
     'worker_options': {},
     'worker_tags': [],
-    'worker_tsa_host': '127.0.0.1',
+    'worker_tsa_host': '127.0.0.1:2222',
     'worker_garden_dns_server': '8.8.8.8'
   }
 },

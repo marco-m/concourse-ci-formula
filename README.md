@@ -4,7 +4,7 @@ All-in-one-VM Concourse installation and SaltStack formula to install Concourse.
 
 ## What's in the box
 
-* Concourse web and worker 3.9.2
+* Concourse web and worker 3.10
 * Postgres DB needed by Concourse web
 * Minio S3-compatible object storage, so that you can learn writing your pipelines with S3 without using AWS S3.
 
