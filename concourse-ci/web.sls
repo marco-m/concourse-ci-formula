@@ -2,7 +2,9 @@
 
 generate_session_signing_key:
   cmd.run:
-    - name: "ssh-keygen -t rsa -f session_signing_key -N ''"
+    - name: |
+        rm -f session_signing_key
+        ssh-keygen -t rsa -f session_signing_key -N ''
     - runas: {{ concourse.user }}
     - cwd: {{ concourse.pki_dir }}
     - creates:

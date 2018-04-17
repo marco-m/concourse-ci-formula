@@ -122,6 +122,33 @@ See the section above about how to run the tests.
 
 Based on https://github.com/mbools/concourse-ci-formula and https://github.com/JustinCarmony/vagrant-salt-example and heavily modified.
 
+## Tips & Tricks
+
+### Concourse Documentation Readability Improvement
+
+One can improve the readability of the concourse documentation by modifying their CSS style to get a larger column. Here is how:
+
+- Install the Stylish extension if not already present.
+- Click on its icon and then on the 3-dots icon in the top right corner of the pop-up.
+- Pick "Create New Style"
+- In the new tab, click the "Import" button from the "Mozilla Format" section and paste-in this:
+```css
+@-moz-document url-prefix("https://concourse-ci.org/") {
+.page {
+    flex: 2;
+}
+
+.examples {
+    flex: 1;
+}
+}
+```
+
+- Close the pop-up by clicking the "Overwrite style" button.
+- Enter a name and then click the "Save" button.
+- Reload the concourse documentation page and enjoy.
+
+
 [VirtualBox]: https://www.virtualbox.org
 [Vagrant]: https://www.vagrantup.com
 [concourse-ci]: http://concourse-ci.org

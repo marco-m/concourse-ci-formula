@@ -8,8 +8,11 @@
     'exe_name': 'concourse_linux_amd64',
     'install_dir': '/home/concourse',
 
+    'postgres_host': '127.0.0.1',
     'postgres_user': 'concourse',
     'postgres_password': 'changeme-65f2de184f5e1d5ec57',
+    'postgres_hba': [],
+    'postgres_version': '9.6',
 
     'web_auth_basic_username': 'changeme',
     'web_auth_basic_password': 'changeme',
@@ -36,6 +39,7 @@ merge=salt['pillar.get']('concourse:lookup'), base='default') %}
                                          concourse.exe_name])}),
   concourse.update({'worker_work_dir': concourse.install_dir + '/worker'}),
   concourse.update({'web_postgres_url':
-                    'postgres://{}:{}@127.0.0.1/atc'.format(concourse.postgres_user,
-                                                            concourse.postgres_password )})
+                    'postgres://{}:{}@{}/atc'.format(concourse.postgres_user,
+                                                     concourse.postgres_password,
+                                                     concourse.postgres_host)})
 %}

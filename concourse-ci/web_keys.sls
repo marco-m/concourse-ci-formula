@@ -2,7 +2,9 @@
 
 generate_tsa_host_key:
   cmd.run:
-    - name: "ssh-keygen -t rsa -f tsa_host_key -N ''"
+    - name: |
+        rm -f tsa_host_key
+        ssh-keygen -t rsa -f tsa_host_key -N ''
     - runas: {{ concourse.user }}
     - cwd: {{ concourse.pki_dir }}
     - creates:
@@ -31,15 +33,18 @@ replace_public_worker_key:
 {% if not concourse.ssm_worker_private_key %} # I am a standalone web and these keys are spurious
 cleanup_spurious_worker_private_key:
   file.absent:
-    - name:
-      - {{ concourse.pki_dir }}/worker_key
-      - {{ concourse.pki_dir }}/tsa_host_key.pub
+    - name: {{ concourse.pki_dir }}/worker_key
+
+cleanup_spurious_tsa_key:
+  file.absent:
+    - name: {{ concourse.pki_dir }}/tsa_host_key.pub
 {% endif %}
 {% endif %}
 
 dummy_worker_public_key:
-  file.touch:
-    - name: {{ concourse.pki_dir }}/worker_key.pub
+  cmd.run:
+    - name: "touch {{ concourse.pki_dir }}/worker_key.pub"
+    - runas: {{ concourse.user }}
 
 ensure_authorized_worker_keys:
   file.symlink:

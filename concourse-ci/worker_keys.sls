@@ -2,7 +2,9 @@
 
 generate_worker_keys:
   cmd.run:
-    - name: "ssh-keygen -t rsa -f worker_key -N ''"
+    - name: |
+        rm -f worker_key
+        ssh-keygen -t rsa -f worker_key -N ''
     - runas: {{ concourse.user }}
     - cwd: {{ concourse.pki_dir }}
     - creates:
