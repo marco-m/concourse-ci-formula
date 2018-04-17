@@ -22,23 +22,11 @@ Vagrant.configure("2") do |config|
   # recent kernel to reduce the many bugs seen with Concourse and btrfs.
   config.vm.box = "bento/ubuntu-17.10"
 
-  # INT-1419
-  # NOTE concourse web has a mandatory option "--external-url" that:
-  # 1. Cannot be loopback (reason of "external" in the name).
-  # 2. Must be reachable from the host, so on VirtualBox it cannot be the address
-  #    of the first guest interface (eth0) plus VirtualBox port forwarding of 8080
-  # This means that unfortunately we need a separate interface (which by itself is not
-  # a problem; it becomes a problem because we want to use the same SaltStack configuration
-  # both for VirtualBox and for AMI, and for the AMI we want only one interface).
-  # This is a known problem in Concourse and there is a ticket for it
-  # https://github.com/concourse/concourse/issues/2069
-  # which should be addressed soon (March 2018).
+  # Concourse web
+  config.vm.network "forwarded_port", guest: 8080, host: 8080
+  # Minio
+  config.vm.network "forwarded_port", guest: 9000, host: 9000
 
-  # Ideally we would like to use VirtualBox DHCP to assign an address:
-  #config.vm.network "private_network", type: "dhcp"
-  # but it doesn't work for some reasons I don't understand, so we are stuck with
-  # an hard-coded IP address
-  config.vm.network "private_network", ip: "192.168.50.4"
   config.vm.define vm_name # Customize the name that shows with vagrant CLI
   #config.vm.hostname vm_name
   config.vm.provider "virtualbox" do |vb|

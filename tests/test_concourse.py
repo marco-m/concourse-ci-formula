@@ -86,20 +86,11 @@ def test_minio_is_running_and_enabled(host):
 
 
 def vm_usable_address(host):
-    # FIXME INT-1419
-    for addr in host.salt("network.ip_addrs"):
-        if not addr.startswith('10.'):
-            return addr
-    raise 'Unable to find an usable VM address'
-
-
-def test_can_get_vm_usable_address(host):
-    # No need to assert, since the UUT raises on error.
-    vm_usable_address(host)
+    return host.salt('network.interface_ip', ['eth0'])
 
 
 def concourse_url(host):
-    return 'http://{}:8080'.format(vm_usable_address(host))
+    return "http://localhost:8080"
 
 
 def minio_url(host):

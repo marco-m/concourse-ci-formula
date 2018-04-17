@@ -21,8 +21,6 @@ ExecStart={{ concourse.bin_dir }}/concourse web \
   --postgres-data-source {{ concourse.web_postgres_url }} \
 {%- if concourse.web_fqdn %}
   --external-url https://{{ concourse.web_fqdn }}
-{% else %}
-  --external-url http://{{ concourse.web_external_ip }}:8080
 {%- endif %}
 
 [Install]

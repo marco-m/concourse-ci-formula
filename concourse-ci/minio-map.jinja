@@ -8,7 +8,7 @@
     'server_url': 'https://dl.minio.io/server/minio/release/linux-amd64/minio',
     'client_url': 'https://dl.minio.io/client/mc/release/linux-amd64/mc',
     'buckets': ['channel', 'test'],
-    'endpoint': 'http://' + salt['network.interface_ip']('eth1') + ':9000',
+    'endpoint': 'http://' + salt['network.interface_ip']('eth0') + ':9000',
   }
 },
 merge=salt['pillar.get']('minio:lookup'), base='default') %}
