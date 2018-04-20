@@ -3,26 +3,40 @@
 
 salt_call()
 {
-  echo $(sudo salt-call $1 $2 | tail -1 | tr -d ' ')    
+  sudo salt-call "$1" "$2" | tail -1 | tr -d ' '
 }
 
 external_ip="localhost"
 internal_ip=$(salt_call network.interface_ip eth0)
-user=$(salt_call pillar.get concourse:lookup:web_auth_basic_username)
-password=$(salt_call pillar.get concourse:lookup:web_auth_basic_password)
 
-access_key=$(salt_call pillar.get minio:lookup:access_key)
-secret_key=$(salt_call pillar.get minio:lookup:secret_key)
+concourse_username=$(salt_call pillar.get concourse:lookup:web_auth_basic_username)
+concourse_password=$(salt_call pillar.get concourse:lookup:web_auth_basic_password)
 
-echo "."
-echo "       Concourse web server:  http://${external_ip}:8080"
-echo "                  fly login:  fly -t ci login -c http://${external_ip}:8080"
-echo "                   Username:  ${user}"
-echo "                   Password:  ${password}"
-echo
-echo "    Minio S3 object storage:"
-echo "                 access_key:  ${access_key}"
-echo "                 secret_key:  ${secret_key}"
-echo "  S3 endpoint for pipelines:  http://${internal_ip}:9000"
-echo "           Minio web server:  http://${external_ip}:9000"
+s3_access_key=$(salt_call pillar.get minio:lookup:access_key)
+s3_secret_key=$(salt_call pillar.get minio:lookup:secret_key)
+s3_endpoint=$(salt_call pillar.get minio:lookup:endpoint)
+
+cat <<EOF
+
+     Concourse web server:  http://${external_ip}:8080
+                fly login:  fly -t vm login -c http://${external_ip}:8080 -u ${concourse_username} -p ${concourse_password}
+                 Username:  ${concourse_username}
+                 Password:  ${concourse_password}
+
+      Minio S3 web server:  http://${external_ip}:9000
+S3 endpoint for pipelines:  ${s3_endpoint}
+            s3_access_key:  ${s3_access_key}
+            s3_secret_key:  ${s3_secret_key}
+
+   VM internal IP address:  ${internal_ip}
+
+To get started, copy the following lines to file 'credentials.yml'; you can then set parametrized pipelines with:
+  fly set-pipeline ... --load-vars-from=credentials.yml
+
+
+minio-endpoint: ${s3_endpoint}
+s3-access-key-id: ${s3_access_key}
+s3-secret-access-key: ${s3_secret_key}
+
+EOF
 echo "."
