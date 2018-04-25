@@ -6,5 +6,4 @@ minio:
     buckets:
       - channel
       - test
-      - caproni-artifacts
-      - caproni-release
+      - caproni
