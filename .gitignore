@@ -8,3 +8,4 @@
 *.iml
 __pycache__/
 ssh_config.generated
+credentials.yml

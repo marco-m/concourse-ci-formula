@@ -29,14 +29,21 @@ S3 endpoint for pipelines:  ${s3_endpoint}
             s3_secret_key:  ${s3_secret_key}
 
    VM internal IP address:  ${internal_ip}
+EOF
 
-To get started, copy the following lines to file 'credentials.yml'; you can then set parametrized pipelines with:
-  fly set-pipeline ... --load-vars-from=credentials.yml
-
-
+cat <<EOF > /vagrant/credentials.yml
 minio-endpoint: ${s3_endpoint}
 s3-access-key-id: ${s3_access_key}
 s3-secret-access-key: ${s3_secret_key}
+EOF
 
+echo "."
+cat <<EOF
+We just created file 'credentials.yml' in the current directory.
+You can use that file to set parametrized pipelines as follows:
+
+    fly set-pipeline ... --load-vars-from=credentials.yml
+
+See as examples the pipelines in the 'tests' directory.
 EOF
 echo "."

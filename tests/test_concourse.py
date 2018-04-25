@@ -188,9 +188,7 @@ class TestS3Pipeline(object):
         pl = 'pipeline-s3'
         assert fly('set-pipeline', non_interactive=True,
                    pipeline=pl, config='{}.yml'.format(HERE/pl),
-                   var=('s3-access-key-id=CHANGEME-b8e46114a7f64561',
-                        's3-secret-access-key=CHANGEME-05ba7d7c95362608',
-                        'minio-endpoint={}'.format(minio_url(host)))).returncode == 0
+                   load_vars_from='credentials.yml').returncode == 0
         assert fly('unpause-pipeline', pipeline=pl).returncode == 0
 
     def test_file_uploaded_to_minio_s3_triggers_pipeline(self, host, fly_login):
