@@ -12,32 +12,66 @@ All-in-one-VM Concourse installation and SaltStack formula to install Concourse.
 
 You can use this repo for two purposes:
 
-1. To bring up a fully functioning Concourse installation with Vagrant and VirtualBox (follow section "Test driving Concourse").
+1. To bring up a fully functioning Concourse installation with Vagrant and VirtualBox (follow next section "Using Concourse").
 2. As a SaltStack formula (see the full Salt Formulas installation and usage instructions at [SaltStack formulas]
 
-## Test driving Concourse
+## Using Concourse
 
 * Install a recent [VirtualBox] and [Vagrant].
 * Run `vagrant up`.
 
 At the end of `vagrant up`, vagrant will print the URL and credentials to use to connect to the Concourse web server and to use `fly`. For example:
 
-    ...
-       Concourse web server:  http://192.168.50.4:8080
-                  fly login:  fly -t ci login -c http://192.168.50.4:8080
-                   Username:  CHANGEME
-                   Password:  CHANGEME
+```text
+      Concourse web server:  http://localhost:8080
+                 fly login:  fly -t vm login -c http://localhost:8080 -u concourse -p CHANGEME
+                  Username:  concourse
+                  Password:  CHANGEME
 
-    Minio S3 object storage:  http://192.168.50.4:9000
-                 access_key:  CHANGEME
-                 secret_key:  CHANGEME
+       Minio S3 web server:  http://localhost:9000
+ S3 endpoint for pipelines:  http://10.0.2.15:9000
+             s3_access_key:  minio
+             s3_secret_key:  CHANGEME
+
+    VM internal IP address:  10.0.2.15
+ We just created file 'credentials.yml' in the current directory.
+ You can use that file to set parametrized pipelines as follows:
+
+     fly set-pipeline ... --load-vars-from=credentials.yml
+
+ See as examples the pipelines in the 'tests' directory.
+```
+
+Do **NOT** add to git the `credentials.yml` file, neither to this repository or to any other repository.
 
 You can use the Minio server to replace AWS S3, so that you can test-drive a full pipeline with artifacts passed from one job to another.
 
+## Changing credentials or adding S3 buckets
+
+Edit accordingly the files under `saltstack/pillar` and re-apply the salt state by running from the host:
+
+    vagrant ssh -c "sudo salt-call state.apply"
+
+## Updating to a new version of this project
+
+It is normally safe to simply do
+
+    git pull
+    vagrant ssh -c "sudo salt-call state.apply"
+
+If this fails for some reasons, you can always destroy the VM and re-provision from scratch. In this case you will lose the build history of the pipelines, all configured pipelines (you just have to `fly set-pipeline` again) and the build artifacts stored in Minio S3. Loosing all this is not a big deal, you can recreate everything, which is the whole point of the Concourse architecture.
+
+    git pull
+    vagrant destroy --force
+    vagrant up
+
 ## Q&A
 
-Q: what are the credentials?  
-A: Run: `vagrant ssh -c /vagrant/scripts/welcome.sh`
+**Q**: what are the credentials ?  
+**A**: Look into generated file `credentials.yml`. If the file doesn't exist or has wrong credentials, run: `vagrant ssh -c /vagrant/scripts/welcome.sh`, it will both print the information and re-create the `credentials.yml` file.
+
+**Q**: Why the `Minio S3 web server` is listening on `http://localhost:9000` while the `S3 endpoint for pipelines` is something like `http://10.0.2.15:9000` ?  
+**A**: Because the `Minio S3 webserver` is meant to be reachable by the user from the host running the VM, so it is using VirtualBox port forwarding. On the other end, the `S3 endpoint for pipelines` is used by the Concourse pipeline. Since the pipeline is running inside a container with a different network namespace, it cannot accept `localhost` addresses. As such, we pass the non-routable address that VirtualBox assigns by DHCP to the first network interface of the VM guest. Normally you don't have to worry for any of this, just pass `credentials.yml` to your parametric pipeline.
 
 ## Security considerations and production use
 
@@ -115,7 +149,6 @@ See the section above about how to run the tests.
 
 ## TODO
 
-- now the worker register itself using its hostname, in this case `vagrant`. This might need to change to its ip address, i saw somewhere that the ATC is confused if a worker is respawned, gets a new ip address and registers with an already known hostname...
 - how do i change the hostname of the VM? It is set to `vagrant`
 
 ## Credits
