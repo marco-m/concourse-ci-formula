@@ -18,9 +18,7 @@ prefix = Pathname.getwd.parent.basename.to_s
 vm_name = "#{prefix}_concourse-formula"
 Vagrant.configure("2") do |config|
 
-  # Why not 16.04 LTS ? Because we want btrfs for performance and we need a
-  # recent kernel to reduce the many bugs seen with Concourse and btrfs.
-  config.vm.box = "bento/ubuntu-17.10"
+  config.vm.box = "bento/ubuntu-18.04"
 
   # Concourse web
   config.vm.network "forwarded_port", guest: 8080, host: 8080

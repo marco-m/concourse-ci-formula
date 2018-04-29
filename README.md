@@ -4,9 +4,10 @@ All-in-one-VM Concourse installation and SaltStack formula to install Concourse.
 
 ## What's in the box
 
-* Concourse web and worker 3.12
-* Postgres DB needed by Concourse web
-* Minio S3-compatible object storage, so that you can learn writing your pipelines with S3 without using AWS S3.
+* VM with Ubuntu 18.04
+* [concourse-ci] web and worker 3.12
+* [Postgres] DB needed by Concourse web
+* [Minio] S3-compatible object storage, so that you can learn writing your pipelines with S3 without using AWS S3.
 
 ## What can I do with this
 
@@ -178,13 +179,29 @@ One can improve the readability of the concourse documentation by modifying thei
 }
 ```
 
-- Close the pop-up by clicking the "Overwrite style" button.
-- Enter a name and then click the "Save" button.
-- Reload the concourse documentation page and enjoy.
+* Close the pop-up by clicking the "Overwrite style" button.
+* Enter a name and then click the "Save" button.
+* Reload the concourse documentation page and enjoy.
 
+## References
+
+* [VirtualBox]
+* [Vagrant]
+* [concourse-ci]
+* [Concourse parameters]
+* [Concourse Credential Management]
+* [SaltStack formulas]
+* [Postgres]
+* [Minio]
 
 [VirtualBox]: https://www.virtualbox.org
 [Vagrant]: https://www.vagrantup.com
+
 [concourse-ci]: http://concourse-ci.org
-[Concourse parameters]: http://concourse-ci.org/single-page.html#parameters
+[Concourse parameters]: https://concourse-ci.org/creds.html#what-can-be-parameterized
+[Concourse Credential Management]: https://concourse-ci.org/creds.html
+
 [SaltStack formulas]: http://docs.saltstack.com/en/latest/topics/development/conventions/formulas.html
+
+[Postgres]: https://www.postgresql.org/
+[Minio]: https://www.minio.io/
