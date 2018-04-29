@@ -32,6 +32,9 @@ S3 endpoint for pipelines:  ${s3_endpoint}
 EOF
 
 cat <<EOF > /vagrant/credentials.yml
+concourse-uri: http://${internal_ip}:8080
+concourse-main-username: ${concourse_username}
+concourse-main-password: ${concourse_password}
 minio-endpoint: ${s3_endpoint}
 s3-access-key-id: ${s3_access_key}
 s3-secret-access-key: ${s3_secret_key}
