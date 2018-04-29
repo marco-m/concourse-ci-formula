@@ -4,7 +4,7 @@ All-in-one-VM Concourse installation and SaltStack formula to install Concourse.
 
 ## What's in the box
 
-* Concourse web and worker 3.10
+* Concourse web and worker 3.12
 * Postgres DB needed by Concourse web
 * Minio S3-compatible object storage, so that you can learn writing your pipelines with S3 without using AWS S3.
 
@@ -150,6 +150,7 @@ See the section above about how to run the tests.
 ## TODO
 
 - how do i change the hostname of the VM? It is set to `vagrant`
+- remove workaround in concourse-ci/install.sls after salt 2018.3.0
 
 ## Credits
 

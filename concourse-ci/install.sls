@@ -44,3 +44,6 @@ user_{{ concourse.user }}:
     - user: {{ concourse.user }}
     - group: {{ concourse.group }}
     - mode: 755
+    # FIXME Workaround https://github.com/saltstack/salt/issues/47042
+    # Should be fixed with release after 2018.3.0
+    - show_changes: False
