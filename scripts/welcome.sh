@@ -16,6 +16,8 @@ s3_access_key=$(salt_call pillar.get minio:lookup:access_key)
 s3_secret_key=$(salt_call pillar.get minio:lookup:secret_key)
 s3_endpoint=$(salt_call pillar.get minio:lookup:endpoint)
 
+vault_token=$(salt_call pillar.get vault:lookup:dev_root_token)
+
 cat <<EOF
 
      Concourse web server:  http://${external_ip}:8080
@@ -28,25 +30,39 @@ S3 endpoint for pipelines:  ${s3_endpoint}
             s3_access_key:  ${s3_access_key}
             s3_secret_key:  ${s3_secret_key}
 
+          Vault from host: VAULT_ADDR=http://${external_ip}:8200 vault status
+         Vault from guest: VAULT_ADDR=http://${internal_ip}:8200 vault status
+ Login to vault from host: VAULT_ADDR=http://${external_ip}:8200 vault login ${vault_token}
+
    VM internal IP address:  ${internal_ip}
 EOF
 
-cat <<EOF > /vagrant/credentials.yml
-concourse-uri: http://${internal_ip}:8080
-concourse-main-username: ${concourse_username}
-concourse-main-password: ${concourse_password}
-minio-endpoint: ${s3_endpoint}
-s3-access-key-id: ${s3_access_key}
-s3-secret-access-key: ${s3_secret_key}
+cat <<EOF > /vagrant/secrets.txt
+
+# concourse-uri: http://${internal_ip}:8080
+# concourse-main-username: ${concourse_username}
+# concourse-main-password: ${concourse_password}
+
+VAULT_ADDR="http://${external_ip}:8200"
+
+vault kv put /concourse/main/minio-endpoint       value=${s3_endpoint}
+vault kv put /concourse/main/s3-access-key-id     value=${s3_access_key}
+vault kv put /concourse/main/s3-secret-access-key value=${s3_secret_key}
+
 EOF
 
 echo "."
 cat <<EOF
-We just created file 'credentials.yml' in the current directory.
-You can use that file to set parametrized pipelines as follows:
+We just created file 'secrets.txt' in the current directory.
+You can use that file to inject into Vault the parameters needed to use S3 storage.
 
-    fly set-pipeline ... --load-vars-from=credentials.yml
+1. Read the README on how to use Vault
+2. Login to Vault
+3. Read the secrets.txt file to understand what it does
+4. Run it (sh secrets.txt)
 
-See as examples the pipelines in the 'tests' directory.
+You can now use your pipelines safely, since the S3 credentials are stored into Vault.
+
+See as an example tests/pipeline-s3.yml for how to refer to S3.
 EOF
 echo "."

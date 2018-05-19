@@ -1,4 +1,5 @@
 base:
   'vagrant.vm':
-    - concourse
+    - vault
     - minio
+    - concourse

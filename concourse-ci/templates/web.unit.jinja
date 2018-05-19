@@ -1,4 +1,5 @@
 {%- from "concourse-ci/map.jinja" import concourse with context -%}
+{%- from "concourse-ci/vault-map.jinja" import vault with context -%}
 [Unit]
 Description=concourse web
 After=network-online.target
@@ -15,6 +16,8 @@ ExecStart={{ concourse.bin_dir }}/concourse web \
   --tsa-host-key {{ concourse.pki_dir }}/tsa_host_key \
   --session-signing-key {{ concourse.pki_dir }}/session_signing_key \
   --tsa-authorized-keys {{ concourse.pki_dir }}/authorized_worker_keys \
+  --vault-url {{ vault.server_url }} \
+  --vault-client-token {{ vault.dev_root_token }} \
   {%- for option, value in concourse.web_options.iteritems() %}
   --{{ option }} {{ value }} \
   {%- endfor %}

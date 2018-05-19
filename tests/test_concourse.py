@@ -1,3 +1,4 @@
+import os
 import pathlib
 import pytest
 import subprocess
@@ -85,6 +86,12 @@ def test_minio_is_running_and_enabled(host):
     assert minio.is_enabled
 
 
+def test_vault_is_running_and_enabled(host):
+    vault = host.service("vault")
+    assert vault.is_running
+    assert vault.is_enabled
+
+
 def vm_usable_address(host):
     return host.salt('network.interface_ip', ['eth0'])
 
@@ -122,6 +129,51 @@ def fly_login(host):
 def test_fly_can_login_and_logout(fly_login):
     # test is empty because we are testing the fly_login fixture
     pass
+
+
+def vault_environ():
+    return os.environ.update({"VAULT_ADDR": "http://localhost:8200"}) 
+
+
+@pytest.fixture(scope='module')
+def vault_login(host):
+    """
+    Login into Vault at setup
+    """
+    token_key = 'vault:lookup:dev_root_token'
+    pillars = host.salt('pillar.item', [token_key])
+    token = pillars[token_key]
+    assert subprocess.run(['vault', 'login', token], env=vault_environ()).returncode == 0
+    yield
+    # We cannot logout because vault (as opposed to fly) doesn't have an explicit target,
+    # so if we logout we might break the user expectation (user logged in before the tests,
+    # user runs the tests, user is logged out, user is confused).
+    # Looking at vault documentation, it might be possible to use `-no-store` and then keep
+    # a token around, will need to try. This would be a lot cleaner.
+
+
+def test_vault_can_login(vault_login):
+    # test is empty because we are testing the vault_login fixture
+    pass
+
+
+def vault_put(key, value):
+    assert subprocess.run(['vault', 'kv', 'put',
+                           key, 'value={}'.format(value)],
+                          env=vault_environ()).returncode == 0
+
+
+@pytest.fixture(scope='module')
+def vault_s3_credentials(host, vault_login):
+    s3_access_key = 'minio:lookup:access_key'
+    s3_secret_key = 'minio:lookup:secret_key'
+    s3_endpoint = 'minio:lookup:endpoint'
+
+    pillars = host.salt('pillar.item', [s3_access_key, s3_secret_key, s3_endpoint])
+    path = '/concourse/main/'
+    vault_put(path + 's3-access-key-id', pillars[s3_access_key])
+    vault_put(path + 's3-secret-access-key', pillars[s3_secret_key])
+    vault_put(path + 'minio-endpoint', pillars[s3_endpoint])
 
 
 def test_at_least_one_worker_is_available(fly_login):
@@ -184,11 +236,10 @@ class TestS3Pipeline(object):
     See https://docs.pytest.org/en/latest/example/simple.html#incremental-testing-test-steps
     """
 
-    def test_fly_prepare_pipeline_s3(self, host, fly_login):
+    def test_fly_prepare_pipeline_s3(self, host, fly_login, vault_s3_credentials):
         pl = 'pipeline-s3'
         assert fly('set-pipeline', non_interactive=True,
-                   pipeline=pl, config='{}.yml'.format(HERE/pl),
-                   load_vars_from='credentials.yml').returncode == 0
+                   pipeline=pl, config='{}.yml'.format(HERE/pl)).returncode == 0
         assert fly('unpause-pipeline', pipeline=pl).returncode == 0
 
     def test_file_uploaded_to_minio_s3_triggers_pipeline(self, host, fly_login):
@@ -206,3 +257,26 @@ class TestS3Pipeline(object):
                 break
             time.sleep(poll_interval)
         assert host_minio_get(host, bucket, pong)
+
+
+def random_string(N=10):
+    import random
+    import string
+    return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(N))
+
+
+def test_concourse_can_read_secret_from_vault(tmpdir, fly_login, vault_login):
+    # vault kv put /concourse/main/can_you_read_me value=yes_i_can
+    secret_key = '/concourse/main/secret-color'
+    secret_value = random_string()
+    vault_put(secret_key, secret_value)
+
+    task = 'task-with-secret'
+    assert fly('execute',
+               config='{}.yml'.format(HERE/task),
+               output='secret-output={}'.format(tmpdir)
+               ).returncode == 0
+    with open('{}/the-secret'.format(tmpdir)) as output:
+        assert output.read().strip() == secret_value
+
+    # teardown: remove vault key!

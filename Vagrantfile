@@ -24,6 +24,8 @@ Vagrant.configure("2") do |config|
   config.vm.network "forwarded_port", host_ip: "127.0.0.1", host: 8080, guest: 8080
   # Minio
   config.vm.network "forwarded_port", host_ip: "127.0.0.1", host: 9000, guest: 9000
+  # Vault
+  config.vm.network "forwarded_port", host_ip: "127.0.0.1", host: 8200, guest: 8200
 
   config.vm.define vm_name # Customize the name that shows with vagrant CLI
   #config.vm.hostname vm_name
@@ -33,6 +35,9 @@ Vagrant.configure("2") do |config|
     vb.memory = "4096"
     vb.cpus = 2
   end
+
+  #config.vm.provision "shell", inline: "DEBIAN_FRONTEND=noninteractive apt-get update"
+  #config.vm.provision "shell", inline: "DEBIAN_FRONTEND=noninteractive apt-get --quiet --yes upgrade"
 
   config.vm.provision :salt do |salt|
     salt.masterless = true

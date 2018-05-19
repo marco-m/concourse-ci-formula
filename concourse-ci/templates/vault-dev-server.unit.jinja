@@ -1,0 +1,17 @@
+{%- from "concourse-ci/vault-map.jinja" import vault with context -%}
+[Unit]
+Description=vault dev server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User={{ vault.user }}
+Group={{ vault.group }}
+Type=simple
+Restart=on-failure
+ExecStart={{ vault.exe }} server -dev \
+  -dev-listen-address={{ vault.dev_listen_address }} \
+  -dev-root-token-id={{ vault.dev_root_token }}
+
+[Install]
+WantedBy=multi-user.target
