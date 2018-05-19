@@ -21,9 +21,9 @@ Vagrant.configure("2") do |config|
   config.vm.box = "bento/ubuntu-18.04"
 
   # Concourse web
-  config.vm.network "forwarded_port", guest: 8080, host: 8080
+  config.vm.network "forwarded_port", host_ip: "127.0.0.1", host: 8080, guest: 8080
   # Minio
-  config.vm.network "forwarded_port", guest: 9000, host: 9000
+  config.vm.network "forwarded_port", host_ip: "127.0.0.1", host: 9000, guest: 9000
 
   config.vm.define vm_name # Customize the name that shows with vagrant CLI
   #config.vm.hostname vm_name
