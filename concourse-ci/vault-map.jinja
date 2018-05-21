@@ -1,0 +1,20 @@
+{% set vault = salt['grains.filter_by']({
+  'default': {
+    'version': '0.10.1',
+    'exe_hash': 'sha224=ad5c28cb1775485ac0ff95d61a7125fdace7938e298e798e825ca6a3',
+    'user': 'vault',
+    'group': 'vault',
+    'base_url': 'https://releases.hashicorp.com/vault',
+    'install_dir': '/home/vault',
+    'dev_listen_address': salt['network.interface_ip']('eth0') + ':8200',
+  }
+},
+merge=salt['pillar.get']('vault:lookup'), base='default') %}
+
+{% do
+  vault.update({'server_url': 'http://' + vault.dev_listen_address}),
+  vault.update({'exe': vault.install_dir + '/bin/vault'}),
+  vault.update({'exe_url': '{}/{}/vault_{}_linux_amd64.zip'.format(vault.base_url,
+                                                                   vault.version,
+                                                                   vault.version)})
+%}
