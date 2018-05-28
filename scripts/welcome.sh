@@ -43,7 +43,7 @@ cat <<EOF > /vagrant/secrets.txt
 # concourse-main-username: ${concourse_username}
 # concourse-main-password: ${concourse_password}
 
-VAULT_ADDR="http://${external_ip}:8200"
+export VAULT_ADDR="http://${external_ip}:8200"
 
 vault kv put /concourse/main/minio-endpoint       value=${s3_endpoint}
 vault kv put /concourse/main/s3-access-key-id     value=${s3_access_key}
