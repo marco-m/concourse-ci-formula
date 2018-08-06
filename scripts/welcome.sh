@@ -66,7 +66,7 @@ You can use that file to inject into Vault the parameters needed to use S3 stora
 3. Read the secrets.txt file to understand what it does
 4. Run it (sh secrets.txt)
 
-You can now use your pipelines safely, since the S3 credentials are stored into Vault.
+You can now develop your pipelines securely, since the S3 credentials are stored in Vault.
 
 See as an example tests/pipeline-s3.yml for how to refer to S3.
 EOF
