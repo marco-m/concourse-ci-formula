@@ -11,17 +11,20 @@ Group={{ concourse.group }}
 Type=simple
 Restart=on-failure
 ExecStart={{ concourse.bin_dir }}/concourse web \
-  --basic-auth-username {{ concourse.web_auth_basic_username }} \
-  --basic-auth-password {{ concourse.web_auth_basic_password }} \
+  --add-local-user {{ concourse.local_user }}:{{ concourse.local_password }} \
+  --main-team-local-user {{ concourse.local_user }} \
   --tsa-host-key {{ concourse.pki_dir }}/tsa_host_key \
   --session-signing-key {{ concourse.pki_dir }}/session_signing_key \
   --tsa-authorized-keys {{ concourse.pki_dir }}/authorized_worker_keys \
+  --postgres-host {{ concourse.postgres_host }} \
+  --postgres-user {{ concourse.postgres_user }} \
+  --postgres-password {{ concourse.postgres_password }} \
+  --postgres-database concourse \
   --vault-url {{ vault.server_url }} \
   --vault-client-token {{ vault.dev_root_token }} \
   {%- for option, value in concourse.web_options.iteritems() %}
   --{{ option }} {{ value }} \
   {%- endfor %}
-  --postgres-data-source {{ concourse.web_postgres_url }} \
 {%- if concourse.web_fqdn %}
   --external-url https://{{ concourse.web_fqdn }}
 {%- endif %}

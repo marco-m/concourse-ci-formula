@@ -13,8 +13,8 @@ Optionally, this repo can be used also as a SaltStack formula (see the full Salt
 ## What's in the box
 
 * VirtualBox VM with Ubuntu 18.04
-* [Concourse] web and worker 3.14.1
-* [Postgres] DB needed by Concourse web
+* [Concourse] 4.2.1 web and worker
+* [PostgreSQL] 10, needed by Concourse web
 * [Minio] S3-compatible object storage. With this, you can learn writing your Concourse pipelines with S3 without using AWS S3.
 * [Vault] 0.10.1 secret and credential manager. With this, you can learn writing your Concourse pipelines following security and operations best practices. See also [Concourse Credential Management] for how Concourse uses Vault.
 
@@ -216,7 +216,7 @@ You can either build an all-in-one VM containing everything (this is the default
 * `concourse-ci.web_keys` Install auto-generated keys for concourse web. Can be overridden to use AWS SSM.
 * `concourse-ci.web` Install and run `concourse web` as a systemd service.
 * `concourse-ci.worker` Install and run `concourse worker` as a systemd service.
-* `concourse-ci.postgres` Install the Postgres ready to be used by concourse web.
+* `concourse-ci.postgres` Install the PostgreSQL ready to be used by concourse web.
 * `concourse-ci.minio` Install the Minio S3-compatible object storage server ready to be used by concourse web.
 * `vault-dev-server.sls` Install the [Vault dev server] secret manager ready to be used by concourse web. Warning: not configured for production use.
 
@@ -278,7 +278,7 @@ You can improve the readability of the concourse documentation by modifying thei
 * [Concourse parameters]
 * [Concourse Credential Management]
 * [SaltStack formulas]
-* [Postgres]
+* [PostgreSQL]
 * [Minio]
 * [Vault]
 * [Vault dev server]
@@ -296,7 +296,7 @@ You can improve the readability of the concourse documentation by modifying thei
 
 [SaltStack formulas]: http://docs.saltstack.com/en/latest/topics/development/conventions/formulas.html
 
-[Postgres]: https://www.postgresql.org/
+[PostgreSQL]: https://www.postgresql.org/
 [Minio]: https://www.minio.io/
 [Vault]: https://www.vaultproject.io/
 [Vault dev server]: https://www.vaultproject.io/intro/getting-started/dev-server.html

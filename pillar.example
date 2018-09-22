@@ -1,6 +1,6 @@
 concourse:
   lookup:
-    version: v3.9.1
+    version: v4.2.1
     exe_hash: sha224=e61f943104ee61f07651fb85d28825b1e001c89742a06e97ce8aac28
     user: concourse
     group: concourse
@@ -11,8 +11,8 @@ concourse:
     postgres_user: concourse
     postgres_password:
 
-    web_auth_basic_username:
-    web_auth_basic_password:
+    local_user:
+    local_password:
     web_options: {}
 
     worker_options: {}

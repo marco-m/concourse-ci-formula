@@ -9,8 +9,8 @@ salt_call()
 external_ip="localhost"
 internal_ip=$(salt_call network.interface_ip eth0)
 
-concourse_username=$(salt_call pillar.get concourse:lookup:web_auth_basic_username)
-concourse_password=$(salt_call pillar.get concourse:lookup:web_auth_basic_password)
+concourse_username=$(salt_call pillar.get concourse:lookup:local_user)
+concourse_password=$(salt_call pillar.get concourse:lookup:local_password)
 
 s3_access_key=$(salt_call pillar.get minio:lookup:access_key)
 s3_secret_key=$(salt_call pillar.get minio:lookup:secret_key)
@@ -21,9 +21,9 @@ vault_token=$(salt_call pillar.get vault:lookup:dev_root_token)
 cat <<EOF
 
      Concourse web server:  http://${external_ip}:8080
-                fly login:  fly -t vm login -c http://${external_ip}:8080 -u ${concourse_username} -p ${concourse_password}
                  Username:  ${concourse_username}
                  Password:  ${concourse_password}
+                fly login:  fly -t vm login -c http://${external_ip}:8080 -u ${concourse_username} -p ${concourse_password}
 
       Minio S3 web server:  http://${external_ip}:9000
 S3 endpoint for pipelines:  ${s3_endpoint}

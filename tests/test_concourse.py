@@ -115,8 +115,8 @@ def fly_login(host):
     Login into Concourse at setup and logout at teardown.
     """
     assert fly('logout').returncode == 0
-    user_k = 'concourse:lookup:web_auth_basic_username'
-    password_k = 'concourse:lookup:web_auth_basic_password'
+    user_k = 'concourse:lookup:local_user'
+    password_k = 'concourse:lookup:local_password'
     creds = host.salt('pillar.item', [user_k, password_k])
     username = creds[user_k]
     password = creds[password_k]

@@ -19,7 +19,7 @@ concourse_create_postgres_user:
 
 concourse_create_postgres_database:
   postgres_database.present:
-    - name: 'atc'
+    - name: 'concourse'
     - owner: {{ concourse.postgres_user }}
 
 
