@@ -48,7 +48,7 @@ export VAULT_ADDR="http://${external_ip}:8200"
 # In case you shut down the VM after the first `vagrant up`, you need to issue
 # this command, which sets the root path for the Concourse secrets:
 #
-# vault secrets enable -path=/concourse kv
+# env VAULT_ADDR="http://${external_ip}:8200" vault secrets enable -path=/concourse kv
 
 vault kv put /concourse/main/minio-endpoint       value=${s3_endpoint}
 vault kv put /concourse/main/s3-access-key-id     value=${s3_access_key}
