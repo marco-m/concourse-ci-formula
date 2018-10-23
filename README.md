@@ -26,22 +26,19 @@ Optionally, this repo can be used also as a SaltStack formula (see the full Salt
 At the end of `vagrant up`, vagrant will print the URL and credentials to use to connect to the Concourse web server and to use `fly`. For example:
 
 ```text
-      Concourse web server:  http://localhost:8080
-                 fly login:  fly -t vm login -c http://localhost:8080 -u concourse -p CHANGEME-8bef502c6d4da90b
-                  Username:  concourse
-                  Password:  CHANGEME-...
+     Concourse web server:  http://192.168.50.4:8080
+                 Username:  concourse
+                 Password:  CHANGEME-8bef502c6d4da90b
+                fly login:  fly -t vm login -c http://192.168.50.4:8080 -u concourse -p CHANGEME-8bef502c6d4da90b
 
-       Minio S3 web server:  http://localhost:9000
- S3 endpoint for pipelines:  http://10.0.2.15:9000
-             s3_access_key:  minio
-             s3_secret_key:  CHANGEME-...
+      Minio S3 web server:  http://192.168.50.4:9000
+S3 endpoint for pipelines:  http://192.168.50.4:9000
+            s3_access_key:  minio
+            s3_secret_key:  CHANGEME-05ba7d7c95362608
 
-           Vault from host: VAULT_ADDR=http://localhost:8200 vault status
-          Vault from guest: VAULT_ADDR=http://10.0.2.15:8200 vault status
-  Login to vault from host: VAULT_ADDR=http://localhost:8200 vault login CHANGE_ME-...
+             Vault status:  env VAULT_ADDR=http://192.168.50.4:8200 vault status
+           Login to Vault:  env VAULT_ADDR=http://192.168.50.4:8200 vault login CHANGE_ME-b30303da7c0c1299967e075e8ac8aa4b
 
-    VM internal IP address:  10.0.2.15
-.
 We just created file 'secrets.txt' in the current directory.
 You can use that file to inject into Vault the parameters needed to use S3 storage.
 
@@ -50,10 +47,9 @@ You can use that file to inject into Vault the parameters needed to use S3 stora
 3. Read the secrets.txt file to understand what it does
 4. Run it (sh secrets.txt)
 
-You can now use your pipelines safely, since the S3 credentials are stored into Vault.
+You can now develop your pipelines securely, since the S3 credentials are stored in Vault.
 
 See as an example tests/pipeline-s3.yml for how to refer to S3.
-.
 ```
 
 Do **NOT** add to git the `secrets.txt` file, neither to this repository or to any other repository.
@@ -77,13 +73,13 @@ All the operations in this section must be performed on the host (the computer h
 
 1. Install the latest `vault` package from [Vault]. The `vault` executable can act either as a client or as a server. Here we will use the client functionality (the server is installed inside the VM).
 
-2. Login to Vault. From the output at the end of `vagrant up`, copy the line that begins with `Login to vault from host`. It will be something similar to `VAULT_ADDR=http://localhost:8200 vault login ...`. If you don't have that output handy, you can recreate it with `vagrant ssh -c "/vagrant/scripts/welcome.sh"`.
+2. Login to Vault. From the output at the end of `vagrant up`, copy the line that begins with `Login to vault from host`. It will be something similar to `env VAULT_ADDR=http://192.168.50.4:8200 vault login ...`. If you don't have that output handy, you can recreate it with `vagrant ssh -c "/vagrant/scripts/welcome.sh"`.
 
-From now on you can follow the instructions in [Vault your first secret], always using the form `VAULT_ADDR=http://localhost:8200 vault ...`
+From now on you can follow the instructions in [Vault your first secret], always using the form `env VAULT_ADDR=http://192.168.50.4:8200 vault ...`
 
 For example, to make the key/value `can_you_read_me/yes_i_can` available to all pipelines in team `main`:
 
-    VAULT_ADDR=http://localhost:8200 vault kv put /concourse/main/can_you_read_me value=yes_i_can
+    env VAULT_ADDR=http://192.168.50.4:8200 vault kv put /concourse/main/can_you_read_me value=yes_i_can
 
 This can be referenced in a pipeline as the parameter `((can_you_read_me))`.
 
@@ -151,9 +147,6 @@ If this fails for some reasons, you can always destroy the VM and re-provision f
 
 **Q**: what are the credentials ?  
 **A**: Look into generated file `secrets.txt`. If the file doesn't exist or has wrong credentials, run: `vagrant ssh -c /vagrant/scripts/welcome.sh`, it will both print the information and re-create the `secrets.txt` file.
-
-**Q**: Why the `Minio S3 web server` is listening on `http://localhost:9000` while the `S3 endpoint for pipelines` is something like `http://10.0.2.15:9000` ?  
-**A**: Because the `Minio S3 webserver` is meant to be reachable by the user from the host running the VM, so it is using VirtualBox port forwarding. On the other end, the `S3 endpoint for pipelines` is used by the Concourse pipeline. Since the pipeline is running inside a container with a different network namespace, it cannot accept `localhost` addresses. As such, we pass the non-routable address that VirtualBox assigns by DHCP to the first network interface of the VM guest. Normally you don't have to worry for any of this, just use a parametric pipeline; Concourse will lookup the parameters in Vault (assuming you followed the instructions in the Vault section of this document).
 
 ## Security considerations and production use
 
@@ -242,33 +235,6 @@ See the section above about how to run the tests.
 ## Credits
 
 Based on https://github.com/mbools/concourse-ci-formula and https://github.com/JustinCarmony/vagrant-salt-example and heavily modified.
-
-## Tips & Tricks
-
-### Concourse Documentation Readability Improvement
-
-You can improve the readability of the concourse documentation by modifying their CSS style to get a larger column:
-
-- Install the Stylish extension.
-- Click on its icon and then on the 3-dots icon in the top right corner of the pop-up.
-- Pick "Create New Style"
-- In the new tab, click the "Import" button from the "Mozilla Format" section and paste-in this:
-
-```css
-@-moz-document url-prefix("https://concourse-ci.org/") {
-  .page {
-      flex: 2;
-  }
-
-  .examples {
-      flex: 1;
-  }
-}
-```
-
-* Close the pop-up by clicking the "Overwrite style" button.
-* Enter a name and then click the "Save" button.
-* Reload the concourse documentation page and enjoy.
 
 ## References
 

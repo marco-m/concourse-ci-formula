@@ -6,8 +6,7 @@ salt_call()
   sudo salt-call "$1" "$2" | tail -1 | tr -d ' '
 }
 
-external_ip="localhost"
-internal_ip=$(salt_call network.interface_ip eth0)
+external_ip=$(salt_call network.interface_ip eth1)
 
 concourse_username=$(salt_call pillar.get concourse:lookup:local_user)
 concourse_password=$(salt_call pillar.get concourse:lookup:local_password)
@@ -30,16 +29,14 @@ S3 endpoint for pipelines:  ${s3_endpoint}
             s3_access_key:  ${s3_access_key}
             s3_secret_key:  ${s3_secret_key}
 
-          Vault from host: VAULT_ADDR=http://${external_ip}:8200 vault status
-         Vault from guest: VAULT_ADDR=http://${internal_ip}:8200 vault status
- Login to vault from host: VAULT_ADDR=http://${external_ip}:8200 vault login ${vault_token}
+             Vault status:  env VAULT_ADDR=http://${external_ip}:8200 vault status
+           Login to Vault:  env VAULT_ADDR=http://${external_ip}:8200 vault login ${vault_token}
 
-   VM internal IP address:  ${internal_ip}
 EOF
 
 cat <<EOF > /vagrant/secrets.txt
 
-# concourse-uri: http://${internal_ip}:8080
+# concourse-uri: http://${external_ip}:8080
 # concourse-main-username: ${concourse_username}
 # concourse-main-password: ${concourse_password}
 

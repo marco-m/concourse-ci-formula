@@ -19,12 +19,21 @@ Vagrant.configure("2") do |config|
 
   config.vm.box = "bento/ubuntu-18.04"
 
-  # Concourse web
-  config.vm.network "forwarded_port", host_ip: "127.0.0.1", host: 8080, guest: 8080
-  # Minio
-  config.vm.network "forwarded_port", host_ip: "127.0.0.1", host: 9000, guest: 9000
-  # Vault
-  config.vm.network "forwarded_port", host_ip: "127.0.0.1", host: 8200, guest: 8200
+  # NOTE 'concourse web' went back and forth with option `--external-url` being sometimes
+  # mandatory and sometimes optional. It became mandatory again with Concourse 4.x.
+  # It has the following characteristics:
+  # 1. Cannot be loopback (reason of "external" in the name).
+  # 2. Must be reachable from the host, so on VirtualBox it cannot be the address
+  #    of the first guest interface (eth0) plus VirtualBox port forwarding of 8080
+  # This means that unfortunately we need a separate interface (which by itself is not
+  # a problem; it becomes a problem because we want to use the same SaltStack configuration
+  # both for VirtualBox and for AMI, and for the AMI we want only one interface).
+
+  # Ideally we would like to use VirtualBox DHCP to assign an address:
+  #config.vm.network "private_network", type: "dhcp"
+  # but it doesn't work for some reasons I don't understand, so we are stuck with
+  # an hard-coded IP address
+  config.vm.network "private_network", ip: "192.168.50.4"
 
   config.vm.define vm_name # Customize the name that shows with vagrant CLI
   #config.vm.hostname = vm_name
@@ -40,7 +49,7 @@ Vagrant.configure("2") do |config|
     salt.minion_config = 'saltstack/etc/minion'
     salt.run_highstate = true
     salt.colorize = true
-    salt.verbose = true
+    salt.verbose = false
   end
 
   config.vm.provision :shell, path: "scripts/welcome.sh", run: 'always'

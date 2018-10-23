@@ -93,11 +93,11 @@ def test_vault_is_running_and_enabled(host):
 
 
 def vm_usable_address(host):
-    return host.salt('network.interface_ip', ['eth0'])
+    return host.salt('network.interface_ip', ['eth1'])
 
 
 def concourse_url(host):
-    return "http://localhost:8080"
+    return 'http://{}:8080'.format(vm_usable_address(host))
 
 
 def minio_url(host):
@@ -131,8 +131,8 @@ def test_fly_can_login_and_logout(fly_login):
     pass
 
 
-def vault_environ():
-    return os.environ.update({"VAULT_ADDR": "http://localhost:8200"}) 
+def vault_environ(host):
+    return os.environ.update({"VAULT_ADDR": 'http://{}:8200'.format(vm_usable_address(host))}) 
 
 
 @pytest.fixture(scope='module')
@@ -143,7 +143,7 @@ def vault_login(host):
     token_key = 'vault:lookup:dev_root_token'
     pillars = host.salt('pillar.item', [token_key])
     token = pillars[token_key]
-    assert subprocess.run(['vault', 'login', token], env=vault_environ()).returncode == 0
+    assert subprocess.run(['vault', 'login', token], env=vault_environ(host)).returncode == 0
     yield
     # We cannot logout because vault (as opposed to fly) doesn't have an explicit target,
     # so if we logout we might break the user expectation (user logged in before the tests,
@@ -157,10 +157,10 @@ def test_vault_can_login(vault_login):
     pass
 
 
-def vault_put(key, value):
+def vault_put(host, key, value):
     assert subprocess.run(['vault', 'kv', 'put',
                            key, 'value={}'.format(value)],
-                          env=vault_environ()).returncode == 0
+                          env=vault_environ(host)).returncode == 0
 
 
 @pytest.fixture(scope='module')
@@ -171,9 +171,9 @@ def vault_s3_credentials(host, vault_login):
 
     pillars = host.salt('pillar.item', [s3_access_key, s3_secret_key, s3_endpoint])
     path = '/concourse/main/'
-    vault_put(path + 's3-access-key-id', pillars[s3_access_key])
-    vault_put(path + 's3-secret-access-key', pillars[s3_secret_key])
-    vault_put(path + 'minio-endpoint', pillars[s3_endpoint])
+    vault_put(host, path + 's3-access-key-id', pillars[s3_access_key])
+    vault_put(host, path + 's3-secret-access-key', pillars[s3_secret_key])
+    vault_put(host, path + 'minio-endpoint', pillars[s3_endpoint])
 
 
 def test_at_least_one_worker_is_available(fly_login):
@@ -265,11 +265,11 @@ def random_string(N=10):
     return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(N))
 
 
-def test_concourse_can_read_secret_from_vault(tmpdir, fly_login, vault_login):
+def test_concourse_can_read_secret_from_vault(host, tmpdir, fly_login, vault_login):
     # vault kv put /concourse/main/can_you_read_me value=yes_i_can
     secret_key = '/concourse/main/secret-color'
     secret_value = random_string()
-    vault_put(secret_key, secret_value)
+    vault_put(host, secret_key, secret_value)
 
     task = 'task-with-secret'
     assert fly('execute',

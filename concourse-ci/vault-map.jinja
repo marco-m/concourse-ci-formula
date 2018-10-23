@@ -6,7 +6,7 @@
     'group': 'vault',
     'base_url': 'https://releases.hashicorp.com/vault',
     'install_dir': '/home/vault',
-    'dev_listen_address': salt['network.interface_ip']('eth0') + ':8200',
+    'dev_listen_address': salt['network.interface_ip']('eth1') + ':8200',
   }
 },
 merge=salt['pillar.get']('vault:lookup'), base='default') %}
