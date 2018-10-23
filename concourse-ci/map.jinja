@@ -17,6 +17,7 @@
     'local_user': 'changeme',
     'local_password': 'changeme',
     'web_options': {},
+    'web_external_ip': salt['network.interface_ip']('eth1'),
     'web_fqdn': None,
 
     'worker_options': {},
