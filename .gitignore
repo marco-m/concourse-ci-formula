@@ -7,7 +7,7 @@
 .vscode/
 *.iml
 __pycache__/
-ssh_config.generated
+ssh-config.generated
 
 credentials.yml
 secrets.txt
