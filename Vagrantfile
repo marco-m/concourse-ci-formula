@@ -1,6 +1,6 @@
 # Enforce minimum version both for Vagrant and VirtualBox.
-Vagrant.require_version ">= 2.2.0"
-MIN_VIRTUALBOX_VERSION = Gem::Version.new('5.2.20')
+Vagrant.require_version ">= 2.2.2"
+MIN_VIRTUALBOX_VERSION = Gem::Version.new('5.2.22')
 version = `VBoxManage --version`
 clean_version = /[0-9]+\.[0-9]+\.[0-9]+/.match(version)
 if Gem::Version.new(clean_version) < MIN_VIRTUALBOX_VERSION
@@ -42,6 +42,7 @@ Vagrant.configure("2") do |config|
     vb.linked_clone = true # Optimize VM creation speed
     vb.memory = "4096"
     vb.cpus = 2
+    vb.default_nic_type = "virtio"
   end
 
   config.vm.provision :salt do |salt|
