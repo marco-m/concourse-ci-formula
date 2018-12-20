@@ -118,7 +118,7 @@ See as an example tests/pipeline-s3.yml for how to refer to S3.
 NOTE In case you shut down the VM after the first `vagrant up`, you need to issue this command,
 which sets the root path for the Concourse secrets:
 
-vault secrets enable -path=/concourse kv
+    vault secrets enable -path=/concourse kv
 
 ## Changing credentials or adding S3 buckets
 
