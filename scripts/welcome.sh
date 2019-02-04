@@ -36,16 +36,29 @@ EOF
 
 cat <<EOF > /vagrant/secrets.txt
 
-# concourse-uri: http://${external_ip}:8080
-# concourse-main-username: ${concourse_username}
-# concourse-main-password: ${concourse_password}
-
 export VAULT_ADDR="http://${external_ip}:8200"
 
-# In case you shut down the VM after the first `vagrant up`, you need to issue
-# this command, which sets the root path for the Concourse secrets:
 #
-# env VAULT_ADDR="http://${external_ip}:8200" vault secrets enable -path=/concourse kv
+# This is needed if the VM has been shut down after having been provisioned.
+#
+echo
+echo "Setting the root path for the Concourse secrets in Vault."
+echo "This command might fail, look for subsequent messages to confirm wether"
+echo "the failure can be ignored or not:"
+vault secrets enable -path=/concourse kv
+status=\$?
+if [ \$status -eq 0 ]; then
+    # do nothing; it worked
+    true
+elif [ \$status -eq 2 ]; then
+    echo "Above error is OK"
+else
+    echo "Command failed, expect cascading errors"
+fi
+echo
+#
+#
+#
 
 vault kv put /concourse/main/minio-endpoint       value=${s3_endpoint}
 vault kv put /concourse/main/s3-access-key-id     value=${s3_access_key}
