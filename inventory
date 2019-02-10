@@ -1,0 +1,9 @@
+all:
+  hosts:
+    concourse-db:
+    concourse-web:
+    concourse-worker:
+  children: {}
+  vars:
+    ansible_ssh_common_args: -F ssh-config.generated
+    ansible_host: concourse-ansible

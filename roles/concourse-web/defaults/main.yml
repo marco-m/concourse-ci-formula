@@ -1,0 +1,3 @@
+concourse_local_user: concourse
+concourse_local_password: CHANGEME-ee21849ede04127f
+concourse_web_external_ip: "{{ansible_facts['all_ipv4_addresses'][-1]}}"

@@ -1,0 +1,109 @@
+###############################################################################
+
+- hosts: all
+  tags: common
+  gather_facts: no
+  become: yes
+  tasks:
+  # WARNING only safe way to upgrade is to reboot, otherwhise kernel and iptables
+  # can be out of sync...
+  # - name: equivalent of "pacman -Syu"
+  #   pacman:
+  #     update_cache: yes
+  #     upgrade: yes
+  - name: install comfort packages
+    pacman:
+      name:
+      - fish
+      - htop
+      state: latest
+  - name: set fish shell for vagrant user
+    user:
+      name: vagrant
+      shell: /usr/bin/fish
+
+- hosts: all
+  tags: common
+  gather_facts: no
+  become: yes
+  vars:
+    env_vars:
+      # Sane `less` pager behavior for journalctl
+      - key: SYSTEMD_LESS
+        value : FRXMK
+  tasks:
+    - name: populate /etc/environment
+      lineinfile:
+        dest: /etc/environment
+        state: present
+        regexp: "^{{item.key}}"
+        line: "{{item.key}}={{item.value}}"
+      with_items: "{{env_vars}}"
+
+###############################################################################
+
+- hosts: localhost
+  tags: make-keys
+  gather_facts: no
+  connection: local
+  roles:
+    - make-keys
+
+###############################################################################
+
+- hosts: concourse-db
+  tags: concourse-db
+  become: yes
+  roles:
+    - postgresql
+
+###############################################################################
+
+- hosts: localhost
+  tags: concourse-web
+  gather_facts: no
+  connection: local
+  tasks:
+  - name: create downloads cache on localhost
+    file:
+      path: "{{concourse_download_cache_dir}}"
+      state: directory
+  - name: download concourse to cache (around 400 MB)
+    get_url:
+      url: "{{concourse_exe_url}}"
+      dest: "{{concourse_download_cache_dir}}/{{concourse_exe_name}}"
+      mode: "755"
+
+###############################################################################
+
+- hosts: concourse-web
+  tags: concourse-web
+  become: yes
+  roles:
+    - concourse-base
+    - concourse-web
+
+###############################################################################
+
+- hosts: concourse-worker
+  tags: concourse-worker
+  become: yes
+  roles:
+    - concourse-base
+    - concourse-worker
+    
+###############################################################################
+
+# - hosts: []
+#   become: yes
+#   vars_files:
+#     - vars.yml
+#   roles:
+#     - concourse-base
+#   #   - concourse-worker
+#   #   - minio-s3
+#   #   - hashicorp_vault
+#   #   - prometheus (scrape itself, concourse, minio, vault)
+#   #   - grafana
+#   #   - conan or opensource artifactory, pizza deps autoupgrade
+#   #   - bazel server!!!

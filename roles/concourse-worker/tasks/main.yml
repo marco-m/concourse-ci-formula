@@ -1,0 +1,26 @@
+- name: install the keys
+  no_log: True
+  copy:
+    content: "{{item.data}}"
+    dest: "{{item.path}}"
+    owner: concourse
+    group: concourse
+    mode: "{{item.mode}}"
+  with_items:
+    - data: "{{concourse_worker_key_data}}"
+      path: "{{concourse_worker_key}}"
+      mode: "400"
+    - data: "{{concourse_worker_key_pub_data}}"
+      path: "{{concourse_worker_key}}.pub"
+      mode: "444"
+
+- name: install systemd unit file
+  template:
+    src: templates/concourse-worker.service.j2
+    dest: /etc/systemd/system/concourse-worker.service
+    
+- name: configure systemd
+  systemd:
+    name: concourse-worker
+    enabled: yes
+    state: started

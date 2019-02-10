@@ -1,0 +1,39 @@
+- name: ensure openssl executable exists
+  command: which openssl
+  changed_when: false
+
+- name: create keys directory
+  file:
+    path: "{{keys_cache_dir}}"
+    state: directory
+
+# https://github.com/concourse/concourse/issues/2592
+- name: generate keypairs, workaround golang quirks (cannot use ssh-keygen)
+  shell: >
+    openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 -out {{item}}
+  args:
+    chdir: "{{keys_cache_dir}}"
+    creates: "{{item}}"
+  with_items:
+    - session_signing_key
+    - tsa_host_key
+    - worker_key
+
+- name: change file mode of private keys
+  file:
+    path: "{{keys_cache_dir}}/{{item}}"
+    mode: "400"
+  with_items:
+    - session_signing_key
+    - tsa_host_key
+    - worker_key
+
+- name: extract SSH-compatible public keys
+  shell: openssl pkey -pubout -in {{item}} -out {{item}}.pub
+  args:
+    chdir: "{{keys_cache_dir}}"
+    creates: "{{item}}.pub"
+  with_items:
+    - session_signing_key
+    - tsa_host_key
+    - worker_key

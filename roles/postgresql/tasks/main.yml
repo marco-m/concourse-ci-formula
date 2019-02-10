@@ -1,0 +1,44 @@
+- name: install PostgreSQL (this creates also the postgres user)
+  pacman:
+    name: postgresql
+    state: present
+
+- name: register data about postgres user
+  user:
+    name: postgres
+  # postgres_user_reg.home should be /var/lib/postgres
+  register: postgres_user_reg
+
+- name: Make ansible not freak out when we change user to postgres
+  file:
+    path: "{{postgres_user_reg.home}}/.ansible/tmp"
+    state: directory
+    owner: postgres
+
+- name: init data storage
+  command: initdb --locale en_US.UTF-8 -E UTF8 -D {{postgres_user_reg.home}}/data
+  args:
+    creates: "{{postgres_user_reg.home}}/data/postgresql.conf"
+  become: yes
+  become_user: postgres
+
+- name: install psycopg2, needed by postresql ansible modules
+  pacman:
+    name: python-psycopg2
+
+- name: configure systemd
+  systemd:
+    name: postgresql
+    enabled: yes
+    state: started
+
+- name: create postres user/role for concourse
+  postgresql_user:
+    name: "{{concourse_postgres_role}}"
+    password: "{{concourse_postgres_password}}"
+
+- name: create postgres database for concourse
+  postgresql_db:
+    name: concourse
+    owner: concourse
+

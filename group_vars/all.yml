@@ -1,0 +1,61 @@
+
+concourse_install_dir: /opt/concourse
+
+concourse_version: v4.2.1
+concourse_exe_hash: sha224:8c78e9a21a0b5fcc0eb9bb210c37fde7ef7d7a292912198b56b933b4
+
+concourse_base_url: https://github.com/concourse/concourse/releases/download
+
+concourse_exe_name: concourse_linux_amd64
+concourse_exe_url: >
+  {{concourse_base_url}}/{{concourse_version}}/{{concourse_exe_name}}
+
+fly_exe_name: fly_linux_amd64
+fly_exe_url: >
+  {{concourse_base_url}}/{{concourse_version}}/{{fly_exe_name}}
+
+concourse_download_cache_dir: cache/downloads/{{concourse_version}}
+keys_cache_dir: cache/keys
+
+concourse_pki_dir: "{{concourse_install_dir}}/pki"
+concourse_bin_dir: "{{concourse_install_dir}}/bin"
+
+concourse_session_signing_key: "{{concourse_pki_dir}}/session_signing_key"
+concourse_tsa_host_key: "{{concourse_pki_dir}}/tsa_host_key"
+concourse_authorized_worker_keys: "{{concourse_pki_dir}}/authorized_worker_keys"
+
+concourse_worker_work_dir: "{{concourse_install_dir}}/work"
+concourse_worker_tsa_host: >-
+  {{hostvars['concourse-web']['ansible_facts']['all_ipv4_addresses'][0]}}
+concourse_worker_tsa_host_key: "{{concourse_tsa_host_key}}.pub"
+concourse_worker_key: "{{concourse_pki_dir}}/worker_key"
+#concourse_worker_garden_dns_server:
+
+
+# FIXME
+# concourse_postgres_host: >-
+#   {{hostvars['concourse-db']['ansible_facts']['all_ipv4_addresses'][0]}}
+concourse_postgres_host: localhost
+concourse_postgres_role: concourse
+# Secret password.
+# Replace with appropriate lookup plugin if you are using a secrets manager.
+concourse_postgres_password: >-
+  {{lookup('password', "{{keys_cache_dir}}/concourse_postgres_password")}}
+
+# Secret keys.
+#
+# If you are using the make-keys task, use the following variables.
+# Replace with appropriate lookup plugin if you are using a secrets manager.
+#
+concourse_session_signing_key_data: >
+  {{lookup('file', "{{keys_cache_dir}}/session_signing_key")}}
+concourse_session_signing_key_pub_data: >
+  {{lookup('file', "{{keys_cache_dir}}/session_signing_key.pub")}}
+concourse_tsa_host_key_data: >
+  {{lookup('file', "{{keys_cache_dir}}/tsa_host_key")}}
+concourse_tsa_host_key_pub_data: >
+  {{lookup('file', "{{keys_cache_dir}}/tsa_host_key.pub")}}
+concourse_worker_key_data: >
+  {{lookup('file', "{{keys_cache_dir}}/worker_key")}}
+concourse_worker_key_pub_data: >
+  {{lookup('file', "{{keys_cache_dir}}/worker_key.pub")}}

@@ -1,0 +1,27 @@
+- name: create concourse user and group
+  user:
+    name: concourse
+    home: /
+    system: yes
+    state: present
+
+- name: create concourse directories
+  file:
+    path: "{{item.dir}}"
+    state: directory
+  with_items:
+    - dir: "{{concourse_install_dir}}"
+    - dir: "{{concourse_pki_dir}}"
+    - dir: "{{concourse_bin_dir}}"
+
+- name: install concourse executable
+  copy:
+    src: "{{concourse_download_cache_dir}}/{{concourse_exe_name}}"
+    dest: "{{concourse_bin_dir}}/concourse"
+    mode: "755"
+
+- name: create concourse bin symlink
+  file:
+    src: "{{concourse_bin_dir}}/concourse"
+    dest: /usr/local/bin/concourse
+    state: link

@@ -1,0 +1,19 @@
+[Unit]
+Description=concourse worker
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+Restart=on-failure
+ExecStart={{concourse_bin_dir}}/concourse worker \
+{% if concourse_worker_garden_dns_server is defined %}
+  --garden-dns-server {{concourse_worker_garden_dns_server}} \
+{% endif %}
+  --work-dir               {{concourse_worker_work_dir}} \
+  --tsa-host               {{concourse_worker_tsa_host}} \
+  --tsa-public-key         {{concourse_worker_tsa_host_key}} \
+  --tsa-worker-private-key {{concourse_worker_key}}
+
+[Install]
+WantedBy=multi-user.target

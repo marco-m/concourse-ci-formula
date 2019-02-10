@@ -1,0 +1,24 @@
+[Unit]
+Description=concourse web
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=concourse
+Group=concourse
+Type=simple
+Restart=on-failure
+ExecStart={{concourse_bin_dir}}/concourse web \
+  --add-local-user       {{concourse_local_user}}:{{concourse_local_password}} \
+  --main-team-local-user {{concourse_local_user}} \
+  --session-signing-key  {{concourse_session_signing_key}} \
+  --tsa-host-key         {{concourse_tsa_host_key}} \
+  --tsa-authorized-keys  {{concourse_authorized_worker_keys}}.pub \
+  --postgres-host        {{concourse_postgres_host}} \
+  --postgres-user        {{concourse_postgres_role}} \
+  --postgres-password    {{concourse_postgres_password}} \
+  --postgres-database    concourse \
+  --external-url         http://{{ concourse_web_external_ip }}:8080
+
+[Install]
+WantedBy=multi-user.target

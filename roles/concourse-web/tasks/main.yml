@@ -1,0 +1,35 @@
+- name: install the keys
+  no_log: True
+  copy:
+    content: "{{item.data}}"
+    dest: "{{item.path}}"
+    owner: concourse
+    group: concourse
+    mode: "{{item.mode}}"
+  with_items:
+    - data: "{{concourse_session_signing_key_data}}"
+      path: "{{concourse_session_signing_key}}"
+      mode: "400"
+    - data: "{{concourse_session_signing_key_pub_data}}"
+      path: "{{concourse_session_signing_key}}.pub"
+      mode: "444"
+    - data: "{{concourse_tsa_host_key_data}}"
+      path: "{{concourse_tsa_host_key}}"
+      mode: "400"
+    - data: "{{concourse_tsa_host_key_pub_data}}"
+      path: "{{concourse_tsa_host_key}}.pub"
+      mode: "444"
+    - data: "{{concourse_worker_key_pub_data}}"
+      path: "{{concourse_authorized_worker_keys}}.pub"
+      mode: "444"
+
+- name: install systemd unit file
+  template:
+    src: templates/concourse-web.service.j2
+    dest: /etc/systemd/system/concourse-web.service
+    
+- name: configure systemd
+  systemd:
+    name: concourse-web
+    enabled: yes
+    state: started
