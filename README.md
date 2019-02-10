@@ -12,9 +12,9 @@ Optionally, this repo can be used also as a SaltStack formula (see the full Salt
 
 ## What's in the box
 
-* VirtualBox VM with Ubuntu 18.04
+* VirtualBox VM with ArchLinux latest version
 * [Concourse] 4.2.1 web and worker
-* [PostgreSQL] 10, needed by Concourse web
+* [PostgreSQL] 10.5, needed by Concourse web
 * [Minio] S3-compatible object storage. With this, you can learn writing your Concourse pipelines with S3 without using AWS S3.
 * [Vault] 0.10.1 secret and credential manager. With this, you can learn writing your Concourse pipelines following security and operations best practices. See also [Concourse Credential Management] for how Concourse uses Vault.
 

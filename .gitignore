@@ -11,3 +11,4 @@ ssh-config.generated
 
 credentials.yml
 secrets.txt
+cache/
