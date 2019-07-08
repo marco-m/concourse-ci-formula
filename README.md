@@ -2,6 +2,12 @@
 
 All-in-one Concourse installation with S3-compatible storage and Vault secret manager.
 
+## Development status
+
+2019-07 Latest Concourse 4.x series. No further work is planned. Next version will use docker-compose and not a VM. 
+
+## Introduction
+
 This is a one-stop solution that allows to:
 
 1. Learn Concourse pipelines from scratch.
